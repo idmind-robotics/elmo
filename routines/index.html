@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+<script type="text/javascript" src="./vendor/eventemitter2.min.js"></script>
+<script type="text/javascript" src="./vendor/roslib.min.js"></script>
+<script type="text/javascript" type="text/javascript">
+  // Connecting to ROS
+  // -----------------
+
+  var ros = new ROSLIB.Ros({
+    url : 'ws://192.168.2.191:9090'
+  });
+
+  ros.on('connection', function() {
+    new ROSLIB.Topic({
+      ros: ros,
+      name: "background",
+      messageType: "std_msgs/String"
+    }).subscribe(msg => {
+      setBackground(msg.data);
+    });
+    setBackground("normal");
+  });
+
+  new ROSLIB.Topic({
+      ros: ros,
+      name: "sound",
+      messageType: "std_msgs/String"
+    }).subscribe(message => {
+      setAudio(message.data);
+    });
+
+  new ROSLIB.Topic({
+      ros: ros,
+      name: "text",
+      messageType: "std_msgs/String"
+    }).subscribe(message => {
+      setText(message.data);
+    });
+    
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+  });
+
+  const setBackground = img => {
+      const imgBackground = document.getElementById("background");
+      imgBackground.src = `./backgrounds/${img}.png`;
+  }
+
+
+  const setAudio = sd => {
+      const audio = document.getElementById("audio");
+      audio.src = `./sounds/${sd}.wav`;
+      audio.play();
+  }
+
+  const setText = txt => {
+    document.write(txt);
+  }    
+
+  
+</script>
+<style>
+  .main {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+  }
+  .background {
+  
+  }
+</style>
+</head>
+
+<body>
+  <div class="main" >
+    <img class="background" alt="background.png" id="background" />
+    <audio id="audio" type="audio/wav" ></audio> 
+  </div>
+</body>
+</html>

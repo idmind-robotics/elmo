@@ -1,0 +1,3 @@
+delay: 0 head_ud: 80 icon: correctIcon eyes: love sound: ola
+delay: 1 head_ud: 120 icon: correctIcon eyes: love sound: none
+delay: 2 head_ud: 100 icon: clearIcon eyes: normal sound: none

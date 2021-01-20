@@ -1,0 +1,17 @@
+YES:
+delay: 0 head: -1 icon: correctIcon
+delay: 1  head: 1 icon: correctIcon
+delay: 2  head: 0 icon: clearIcon
+
+NO:
+delay: 0 head: -1 icon: incorrectIcon
+delay: 1 head: 1 icon: incorrectIcon
+delay: 2 head: 0 icon: incorrectIcon
+
+LAUGH:
+delay: 0 head: -1
+delay: 1 sound: laugh
+
+ATTENTION:
+delay: 0 icon: questionIcon
+
