@@ -1,0 +1,25 @@
+<launch>
+    <rosparam subst_value="true">
+        pan_tilt:
+            pan_id: 3
+            pan_p: 65
+            pan_d: 50
+            tilt_id: 4
+            tilt_p: 40
+            tilt_d: 20
+            min_pan_angle: 50
+            max_pan_angle: 100
+            min_tilt_angle: 80
+            max_tilt_angle: 120
+            min_playtime: 10
+            max_playtime: 100
+        http_server:
+            address: localhost
+            port: 8000
+            static: $(find elmo)/src/static
+    </rosparam>
+    <node pkg="elmo" output="screen" type="pan_tilt.py"         name="pan_tilt" />
+    <node pkg="elmo" output="screen" type="leds.py"             name="leds" />
+    <node pkg="elmo" output="screen" type="touch_sensors.py"    name="touch_sensors" />
+    <node pkg="elmo" output="screen" type="http_server.py"      name="http_server" />
+</launch>

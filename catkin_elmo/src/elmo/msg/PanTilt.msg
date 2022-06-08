@@ -1,0 +1,9 @@
+bool pan_torque
+float64 pan_angle
+float64 pan_angle_ref
+bool tilt_torque
+float64 tilt_angle
+float64 tilt_angle_ref
+float64 playtime
+float64 pan_temperature
+float64 tilt_temperature

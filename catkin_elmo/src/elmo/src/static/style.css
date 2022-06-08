@@ -1,0 +1,45 @@
+body {
+    font-family: Helvetica, sans-serif;
+    background-color: black;
+    color: white;
+    overflow: hidden;
+    cursor: none;
+}
+
+#div-console {
+    color: black;
+    background-color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    padding-left: 2rem;
+}
+
+#div-main {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+#img-eyes {
+    height: 100%;
+}
+
+#p-text {
+    color: #C4E5EE;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
