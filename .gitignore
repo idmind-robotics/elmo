@@ -1,5 +1,5 @@
 build/
-devel/
 build_isolated/
+devel/
 devel_isolated/
-
+.vscode/
