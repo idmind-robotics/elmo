@@ -27,7 +27,8 @@ class Leds:
         image = Image.open(img)
         for row in range(13):
             for col in range(13):
-                color = image.getpixel((col, 12 - row))
+                # color = image.getpixel((col, 12 - row))
+                color = image.getpixel((12 - col, row))
                 msg.colors.append(ColorRGBA(r=color[0], g=color[1], b=color[2], a=0))
         self.pub.publish(msg)
 

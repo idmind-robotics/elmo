@@ -11,7 +11,7 @@ from std_msgs.msg import ColorRGBA
 from elmo.msg import Colors
 
 
-LOOP_RATE = 20
+LOOP_RATE = 5
 
 
 class Node:

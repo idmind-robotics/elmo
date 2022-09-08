@@ -25,7 +25,7 @@
     <node pkg="elmo" output="screen" type="touch_sensors.py"    name="touch_sensors" />
     <node pkg="elmo" output="screen" type="http_server.py"      name="http_server" />
     <!-- test nodes -->
-    <node pkg="elmo" output="screen" type="test_pan_tilt.py"    name="test_pan_tilt" />
-    <node pkg="elmo" output="screen" type="test_leds.py"        name="test_leds" />
+    <!--node pkg="elmo" output="screen" type="test_pan_tilt.py"    name="test_pan_tilt" /-->
+    <!--node pkg="elmo" output="screen" type="test_leds.py"        name="test_leds" /-->
 
 </launch>
