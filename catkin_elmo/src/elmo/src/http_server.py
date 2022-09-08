@@ -67,6 +67,18 @@ def images():
     image_list = os.listdir(rospy.get_param("http_server/static") + "/images")
     return jsonify(image_list)
 
+@app.route("/sounds")
+def sounds():
+    print("serving: sounds")
+    sounds_list = os.listdir(rospy.get_param("http_server/static") + "/sounds")
+    return jsonify(sounds_list)
+
+@app.route("/speech")
+def speech():
+    print("serving: speech")
+    speech_list = os.listdir(rospy.get_param("http_server/static") + "/speech")
+    return jsonify(speech_list)
+
 
 if __name__ == "__main__":
     rospy.init_node("http_server")
