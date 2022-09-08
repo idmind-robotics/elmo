@@ -32,6 +32,13 @@ class Leds:
                 msg.colors.append(ColorRGBA(r=color[0], g=color[1], b=color[2], a=0))
         self.pub.publish(msg)
 
+    def set_colors(self, colors):
+        msg = Colors()
+        for row in range(13):
+            for col in range(13):
+                r, g, b = colors[row*13+col]
+                msg.colors.append(ColorRGBA(r=r, g=g, b=b, a=0))
+
     def indexed_rainbow(self):
         msg = Colors()
         for i in range(169):
@@ -76,6 +83,20 @@ class Server:
 
     def url_for_image(self, image_name):
         return "http://elmo:8000/images/" + image_name
+
+    def get_sound_list(self):
+        sound_list = requests.get("http://elmo:8000/sounds").json()
+        return sound_list
+
+    def url_for_sound(self, sound_name):
+        return "http://elmo:8000/sounds/" + sound_name
+
+    def get_speech_list(self):
+        speech_list = requests.get("http://elmo:8000/speech").json()
+        return speech_list
+
+    def url_for_speech(self, speech_name):
+        return "http://elmo:8000/speech/" + speech_name
 
 
 class Onboard:
@@ -169,6 +190,12 @@ class PanTilt:
             "min_playtime": rospy.get_param("pan_tilt/min_playtime"),
             "max_playtime": rospy.get_param("pan_tilt/max_playtime"),
         }
+
+    def set_limits(self, min_pan_angle, max_pan_angle, min_tilt_angle, max_tilt_angle):
+        rospy.set_param("pan_tilt/min_pan_angle", min_pan_angle)
+        rospy.set_param("pan_tilt/max_pan_angle"), max_pan_angle
+        rospy.set_param("pan_tilt/min_tilt_angle", min_tilt_angle)
+        rospy.set_param("pan_tilt/max_tilt_angle", max_tilt_angle)
 
     def get_status(self):
         return {
