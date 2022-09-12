@@ -6,9 +6,11 @@ import socket
 import json
 from flask import Flask, jsonify, request
 import robot as r
+import rospy
+from werkzeug.utils import secure_filename
 
 
-SERVER_PORT = 8000
+SERVER_PORT = 8001
 
 
 app = Flask(
@@ -24,15 +26,19 @@ class Robot:
     server_api = r.Server()
     leds_api = r.Leds()
     onboard_api = r.Onboard()
+    sound_api = r.Sound()
+    power_api = r.Power()
+    behaviour_api = r.Behaviours()
+    wifi_api = r.Wifi()
 
 
     def __init__(self):
         self.pan = 0
         self.tilt = 0
         self.pan_min = 0
-        self.pan_max = 80
-        self.tilt_min = -90
-        self.tilt_max = 90
+        self.pan_max = 0
+        self.tilt_min = 0
+        self.tilt_max = 0
         self.pan_torque = False
         self.tilt_torque = False
         self.pan_temperature = 0
@@ -42,29 +48,22 @@ class Robot:
         self.touch_head_s = False
         self.touch_head_e = False
         self.touch_head_w = False
+        self.touch_threshold = 0
         self.behaviour_test_motors = False
         self.behaviour_test_leds = False
-        self.speech_list = [
-            "speech 01",
-            "speech 02",
-            "speech 03",
-        ]
-        self.sound_list = [
-            "sound 01",
-            "sound 02",
-            "sound 03",
-        ]
-        self.face_list = [
-            "face 01",
-            "face 02"
-        ]
-        self.icon_list = [
-            "icon 01",
-            "icon 01 (red)"
-        ]
+        self.speech_list = []
+        self.sound_list = []
+        self.face_list = []
+        self.icon_list = []
         self.volume = 0
-        self.video_port = "8080"
-        self.video_path = "/stream?topic=/usb_cam/image_raw"
+        self.video_port = "8081"
+        self.video_path = "/"
+
+        self.multimedia_port = self.server_api.port
+        self.image_address = self.server_api.image_address
+        self.icon_address = self.server_api.icon_address
+        self.sound_address = self.server_api.sound_address
+        self.speech_address = self.server_api.speech_address
 
     def update(self):
         # motors
@@ -86,19 +85,28 @@ class Robot:
         self.touch_head_s = self.touch_api.touch_status[r.Touch.HEAD_S]
         self.touch_head_e = self.touch_api.touch_status[r.Touch.HEAD_E]
         self.touch_head_w = self.touch_api.touch_status[r.Touch.HEAD_W]
+        self.touch_threshold = self.touch_api.get_touch_threshold()
         # behaviours
+        self.behaviour_test_motors = self.behaviour_api.is_behaviour_enabled("test_motors")
+        self.behaviour_test_motors = self.behaviour_api.is_behaviour_enabled("test_leds")
         # server
         self.speech_list = self.server_api.get_speech_list()
         self.sound_list = self.server_api.get_sound_list()
         self.face_list = self.server_api.get_image_list()
         self.icon_list = self.server_api.get_icon_list()
-        # sound
-
 
     def enable_test_motors(self, control):
+        if control:
+            self.behaviour_api.enable_behaviour("test_motors")
+        else:
+            self.behaviour_api.disable_behaviour("test_motors")
         return True, "OK"
 
     def enable_test_leds(self, control):
+        if control:
+            self.behaviour_api.enable_behaviour("test_leds")
+        else:
+            self.behaviour_api.disable_behaviour("test_leds")
         return True, "OK"
 
     def set_pan_torque(self, control):
@@ -127,15 +135,18 @@ class Robot:
         return True, "OK"
 
     def play_sound(self, name):
+        url = self.server_api.url_for_sound(name)
+        self.sound_api.play_sound_from_url(url)
         return True, "OK"
 
     def play_speech(self, name):
-        return True, "OK"
+        return False, "play_speech() not implemented"
 
     def pause_audio(self):
-        return True, "OK"
+        return False, "pause_audio() not implemented"
 
     def set_volume(self, v):
+        self.sound_api.set_volume(v)
         return True, "OK"
 
     def update_leds(self, colors):
@@ -144,17 +155,33 @@ class Robot:
 
     def update_leds_icon(self, name):
         url = self.server_api.url_for_icon(name)
-        self.leds.load_from_url(url)
+        self.leds_api.load_from_url(url)
         return True, "OK"
 
-    def set_screen(self, image=None, text=None, url=None):
-        if image is not None:
-            self.onboard_api.set_image(image)
-        elif text is not None:
+    def set_screen(self, image=None, text=None, url=None, camera=False):
+        if image is not "":
+            url = self.server_api.url_for_image(image)
+            self.onboard_api.set_image(url)
+        elif text is not "":
             self.onboard_api.set_text(text)
+        elif camera:
+            self.onboard_api.set_camera_feed()
+        else:
+            default_image = self.onboard_api.get_default_image()
+            url = self.server_api.url_for_image(default_image)
+            self.onboard_api.set_image(url)
+        return True, "OK"
+
+    def update_touch_threshold(self, threshold):
+        self.touch_api.set_touch_threshold(threshold)
         return True, "OK"
 
     def shutdown(self):
+        self.power_api.shutdown()
+        return True, "OK"
+
+    def update_wifi_credentials(self, ssid, password):
+        self.wifi_api.update_credentials(ssid, password)
         return True, "OK"
 
 
@@ -184,6 +211,9 @@ def command():
             if name == "test_leds":
                 success, message = robot.enable_test_leds(control)
             return jsonify({ "success": True, "message": "OK" })
+        elif op == "update_touch_threshold":
+            threshold = req["threshold"]
+            success, message = robot.update_touch_threshold(threshold)
         elif op == "set_pan_torque":
             control = req["control"]
             success, message = robot.set_pan_torque(control)
@@ -217,17 +247,20 @@ def command():
             image = req["image"]
             text = req["text"]
             url = req["url"]
-            success, message = robot.set_screen(image, text, url)
+            camera = req["camera"]
+            success, message = robot.set_screen(image, text, url, camera)
         elif op == "update_leds":
             colors = req["colors"]
             success, message = robot.update_leds(colors)
         elif op == "update_leds_icon":
             name = req["name"]
             success, message = robot.update_leds_icon(name)
-        elif op == "reboot":
-            success, message = robot.reboot()
         elif op == "shutdown":
             success, message = robot.shutdown()
+        elif op == "update_wifi_credentials":
+            ssid = req["ssid"]
+            password = req["password"]
+            success, message = robot.update_wifi_credentials(ssid, password)
         else:
             return jsonify({ "success": False, "message": "%s is not a recognized operation" % op })
         return jsonify({ "success": success, "message": message })
@@ -254,7 +287,8 @@ if __name__ == '__main__':
     udp_server_thread = threading.Thread(target=quick_connect)
     udp_server_thread.setDaemon(True)
     udp_server_thread.start()
-    server_thread = threading.Thread(target=lambda: app.run(host="0.0.0.0", port=8001))
+    server_thread = threading.Thread(target=lambda: app.run(host="0.0.0.0", port=SERVER_PORT))
     server_thread.setDaemon(True)
     server_thread.start()
-    input("running")
+    rospy.init_node("robot_server")
+    rospy.spin()

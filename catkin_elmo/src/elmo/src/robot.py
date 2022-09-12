@@ -10,6 +10,8 @@ import rospy
 from elmo.msg import Colors, TouchEvent, PanTilt as PanTiltMsg
 from std_msgs.msg import ColorRGBA
 from std_msgs.msg import String
+import os
+import threading
 
 
 class Leds:
@@ -36,8 +38,9 @@ class Leds:
         msg = Colors()
         for row in range(13):
             for col in range(13):
-                r, g, b = colors[row*13+col]
+                r, g, b = colors[row*13+12-col]
                 msg.colors.append(ColorRGBA(r=r, g=g, b=b, a=0))
+        self.pub.publish(msg)
 
     def indexed_rainbow(self):
         msg = Colors()
@@ -70,33 +73,48 @@ class Leds:
 
 class Server:
 
+    def __init__(self):
+        self.port = rospy.get_param("http_server/port")
+        self.image_address = "/images"
+        self.icon_address = "/icons"
+        self.speech_address = "/speech"
+        self.sound_address = "/sounds"
+
     def get_icon_list(self):
-        icon_list = requests.get("http://elmo:8000/icons").json()
+        url = "http://elmo:" + str(self.port) + self.icon_address
+        icon_list = requests.get(url).json()
         return icon_list
 
     def url_for_icon(self, icon_name):
-        return "http://elmo:8000/icons/" + icon_name
+        url = "http://elmo:" + str(self.port) + self.icon_address
+        return url + "/" + icon_name
 
     def get_image_list(self):
-        image_list = requests.get("http://elmo:8000/images").json()
+        url = "http://elmo:" + str(self.port) + self.image_address
+        image_list = requests.get(url).json()
         return image_list
 
     def url_for_image(self, image_name):
-        return "http://elmo:8000/images/" + image_name
+        url = "http://elmo:" + str(self.port) + self.image_address
+        return url + "/" + image_name
 
     def get_sound_list(self):
-        sound_list = requests.get("http://elmo:8000/sounds").json()
+        url = "http://elmo:" + str(self.port) + self.sound_address
+        sound_list = requests.get(url).json()
         return sound_list
 
     def url_for_sound(self, sound_name):
-        return "http://elmo:8000/sounds/" + sound_name
+        url = "http://elmo:" + str(self.port) + self.sound_address
+        return url + "/" + sound_name
 
     def get_speech_list(self):
-        speech_list = requests.get("http://elmo:8000/speech").json()
+        url = "http://elmo:" + str(self.port) + self.speech_address
+        speech_list = requests.get(url).json()
         return speech_list
 
     def url_for_speech(self, speech_name):
-        return "http://elmo:8000/speech/" + speech_name
+        url = "http://elmo:" + str(self.port) + self.speech_address
+        return url + "/" + speech_name
 
 
 class Onboard:
@@ -129,6 +147,17 @@ class Onboard:
         }
         command_description = json.dumps(command)
         self.command_pub.publish(command_description)
+
+    def set_camera_feed(self):
+        command = {
+            "image": "http://elmo:8081/",
+            "text": None
+        }
+        command_description = json.dumps(command)
+        self.command_pub.publish(command_description)
+
+    def get_default_image(self):
+        return rospy.get_param("onboard/default_image")
 
 
 class Touch:
@@ -171,6 +200,12 @@ class Touch:
 
     def on_touch_chest(self, cb):
         self.callbacks[Touch.CHEST].append(cb)
+
+    def get_touch_threshold(self):
+        return rospy.get_param("touch/threshold")
+    
+    def set_touch_threshold(self, threshold):
+        rospy.set_param("touch/threshold", threshold)
 
 
 class PanTilt:
@@ -235,6 +270,61 @@ class PanTilt:
         pan = (limits["max_pan_angle"] + limits["min_pan_angle"]) / 2.0
         tilt = (limits["max_tilt_angle"] + limits["min_tilt_angle"]) / 2.0
         self.set_angles(pan=pan, tilt=tilt, relative=False)
+
+
+class Sound:
+
+    def play_sound_from_url(self, url):
+        os.system("curl %s | aplay" % url)
+
+    def set_volume(self, v):
+        print("SET VOLUME")
+        print(v)
+        os.system("amixer sset 'Master' {}%".format(v))
+
+
+class Power:
+
+    def shutdown(self):
+        def do_shutdown():
+            os.system("/usr/sbin/shutdown -h now")
+        shutdown_thread = threading.Thread(target=do_shutdown)
+        shutdown_thread.start()
+
+
+class Behaviours:
+
+    def __init__(self):
+        self.enable_pub = rospy.Publisher("behaviour/enable", String, queue_size=1)
+        self.disable_pub = rospy.Publisher("behaviour/disable", String, queue_size=1)
+
+    def get_behaviour_list(self):
+        behaviours = rospy.get_param("behaviours").keys()
+        return behaviours
+
+    def enable_behaviour(self, behaviour):
+        print("enabling " + behaviour)
+        self.enable_pub.publish(behaviour)
+
+    def disable_behaviour(self, behaviour):
+        print("disabling " + behaviour)
+        self.disable_pub.publish(behaviour)
+
+    def is_behaviour_enabled(self, behaviour):
+        return rospy.get_param("behaviour/" + behaviour + "/enabled")
+
+class Wifi:
+    def __init__(self):
+        self.credentials_file = rospy.get_param("wifi/credentials")
+
+    def update_credentials(self, ssid, password):
+        rospy.loginfo("updating wifi credentials")
+        with open(self.credentials_file, "w") as fp:
+            json.dump({
+                "ssid": ssid,
+                "password": password
+            }, fp)
+        rospy.logwarn("wifi credentials updated")
 
 
 def test():

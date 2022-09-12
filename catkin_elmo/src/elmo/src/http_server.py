@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 
 import os
@@ -8,6 +8,7 @@ from flask_cors import CORS
 import threading
 import rospy
 from std_msgs.msg import String
+from werkzeug.utils import secure_filename
 
 
 """
@@ -34,13 +35,11 @@ ONBOARD_STATE = {
 
 @app.route("/")
 def index():
-    print("serving: index")
     return send_from_directory(rospy.get_param("http_server/static"), "index.html")
     
 
 @app.route("/api/onboard/command")
 def onboard_command():
-
     return jsonify(ONBOARD_COMMAND)
 
 
@@ -54,30 +53,93 @@ def onboard_state():
     return jsonify({})
 
 
-@app.route("/icons")
+@app.route("/icons", methods=["GET", "POST"])
 def icons():
-    print("serving: icons")
-    icon_list = os.listdir(rospy.get_param("http_server/static") + "/icons")
-    return jsonify(icon_list)
+    if request.method == "GET":
+        icon_list = os.listdir(rospy.get_param("http_server/static") + "/icons")
+        return jsonify(icon_list)
+    elif request.method == "POST":
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        path = rospy.get_param("http_server/static") + "/icons/"
+        file.save(path + filename)
+        return jsonify("OK")
 
 
-@app.route("/images")
+@app.route("/icons/<name>", methods=["DELETE"])
+def delete_icon(name):
+    if request.method == "DELETE":
+        full_name = rospy.get_param("http_server/static") + "/icons/" + name
+        print("deleting " + full_name)
+        os.remove(full_name)
+        return jsonify("OK")
+
+
+@app.route("/images", methods=["GET", "POST"])
 def images():
-    print("serving: images")
-    image_list = os.listdir(rospy.get_param("http_server/static") + "/images")
-    return jsonify(image_list)
+    if request.method == "GET":
+        image_list = os.listdir(rospy.get_param("http_server/static") + "/images")
+        return jsonify(image_list)
+    elif request.method == "POST":
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        path = rospy.get_param("http_server/static") + "/images/"
+        print("uploading " + path + filename) 
+        file.save(path + filename)
+        return jsonify("OK")
 
-@app.route("/sounds")
+
+@app.route("/images/<name>", methods=["DELETE"])
+def delete_image(name):
+    if request.method == "DELETE":
+        full_name = rospy.get_param("http_server/static") + "/images/" + name
+        print("deleting " + full_name)
+        os.remove(full_name)
+        return jsonify("OK")
+
+
+@app.route("/sounds", methods=["GET", "POST"])
 def sounds():
-    print("serving: sounds")
-    sounds_list = os.listdir(rospy.get_param("http_server/static") + "/sounds")
-    return jsonify(sounds_list)
+    if request.method == "GET":        
+        sounds_list = os.listdir(rospy.get_param("http_server/static") + "/sounds")
+        return jsonify(sounds_list)
+    elif request.method == "POST":
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        path = rospy.get_param("http_server/static") + "/sounds/"
+        file.save(path + filename)
+        return jsonify("OK")
 
-@app.route("/speech")
+
+@app.route("/sounds/<name>", methods=["DELETE"])
+def delete_sound(name):
+    if request.method == "DELETE":
+        full_name = rospy.get_param("http_server/static") + "/sounds/" + name
+        print("deleting " + full_name)
+        os.remove(full_name)
+        return jsonify("OK")
+
+
+@app.route("/speech", methods=["GET", "POST"])
 def speech():
-    print("serving: speech")
-    speech_list = os.listdir(rospy.get_param("http_server/static") + "/speech")
-    return jsonify(speech_list)
+    if request.method == "GET":
+        speech_list = os.listdir(rospy.get_param("http_server/static") + "/speech")
+        return jsonify(speech_list)
+    elif request.method == "POST":
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        path = rospy.get_param("http_server/static") + "/speech/"
+        file.save(path + filename)
+        return jsonify("OK")
+
+
+@app.route("/speech/<name>", methods=["DELETE"])
+def delete_speech(name):
+    if request.method == "DELETE":
+        full_name = rospy.get_param("http_server/static") + "/speech/" + name
+        print("deleting " + full_name)
+        os.remove(full_name)
+        return jsonify("OK")
 
 
 if __name__ == "__main__":
