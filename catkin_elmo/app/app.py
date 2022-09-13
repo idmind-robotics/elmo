@@ -103,6 +103,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.log("Application running.")
 
         # scan robots on startup
+        robot_client.set_robot_model("Elmo")
         self.robot = None
         self.scan_network.clicked.connect(self.scan_robots)
         self.shutdown.clicked.connect(self.do_shutdown)
@@ -114,7 +115,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def disconnect(self):
         self.robot = None
-        self.log("Connection closed.")
+        QMessageBox.warning(self, "Disconnect", "Connection to robot lost!")
         self.scan_robots()
 
     def keyPressEvent(self, event):
@@ -146,7 +147,7 @@ class Window(QMainWindow, Ui_MainWindow):
         success, message, self.robot = robot_client.connect(address)
         if success:
             self.robot.on_error = self.log
-            self.robot.on_fatal_error = self.disconnect
+            self.robot.on_disconnect = self.disconnect
             self.dialog.close()
             self.log("Connected to robot at %s" % address)
         else:

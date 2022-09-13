@@ -8,24 +8,28 @@ import threading
 
 
 CONTEXT = {
-    "scanning_robots": False
+    "scanning_robots": False,
+    "robot_model": ""
 }
 
-MAX_ERROR_COUNT = 10
 
 
-def scan_robots(cb):
+def set_robot_model(model):
+    CONTEXT["robot_model"] = model
+
+
+def scan_robots(cb, models=[]):
     def scan_robots_runnable():
         while CONTEXT["scanning_robots"]:
-            interfaces = netifaces.interfaces()
-            allips = []
-            for i in interfaces:
-                allips.append(netifaces.ifaddresses(i)[netifaces.AF_INET][0]["addr"])
-            msg = b'ruarobot'
-            for ip in allips:
-                if "127.0.0" in ip:
-                    continue
-                try:
+            try:
+                interfaces = netifaces.interfaces()
+                allips = []
+                for i in interfaces:
+                    allips.append(netifaces.ifaddresses(i)[netifaces.AF_INET][0]["addr"])
+                msg = b'ruarobot'
+                for ip in allips:
+                    if "127.0.0" in ip:
+                        continue
                     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
                     sock.settimeout(1)
                     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -33,11 +37,15 @@ def scan_robots(cb):
                     sock.sendto(msg, ("255.255.255.255", 5000))
                     data, address = sock.recvfrom(1024)
                     if b"iamarobot" in data:
-                        header, robot_model, robot_name, server_port = data.decode("utf-8").split(";")
-                        cb(robot_name, "http://%s:%s" % (address[0], server_port))
+                        _, robot_model, robot_name, server_port = data.decode("utf-8").split(";")
+                        if CONTEXT["robot_model"]:
+                            if robot_model == CONTEXT["robot_model"]:
+                                cb(robot_name, "http://%s:%s" % (address[0], server_port))
+                        else:
+                            cb(robot_name, "http://%s:%s" % (address[0], server_port))
                     sock.close()
-                except:
-                    pass
+            except:
+                pass
     CONTEXT["scanning_robots"] = True
     t = threading.Thread(target=scan_robots_runnable)
     t.start()
@@ -53,14 +61,14 @@ def connect(address):
         return False, e, None        
 
 
+MAX_ERROR_COUNT = 5
+
+
 class Robot:
+    error_count = 0
 
     def __init__(self, address):
         self.address = address
-        ip, port = address.split("/")[2].split(":")
-        self.ip = ip
-        self.port = port
-        self.error_count = 0
 
     def update_status(self):
         try:
@@ -70,10 +78,10 @@ class Robot:
                 setattr(self, k, new_status[k])
             self.error_count = 0
         except Exception as e:
-            if self.error_count < MAX_ERROR_COUNT:
-                self.error_count += 1
+            if self.error_count > MAX_ERROR_COUNT:
+                self.on_disconnect()
             else:
-                self.on_fatal_error()
+                self.error_count += 1
             print(e)
 
     def send_command(self, command, **kwargs):
@@ -81,16 +89,13 @@ class Robot:
             url = self.address + "/command"
             kwargs["op"] = command
             res = requests.post(url, json=kwargs).json()
-            if res["success"]:
-                return True
-            else:
+            if not res["success"]:
                 self.on_error(res["message"])
-                return False
         except Exception as e:
             print(e)
 
     def on_error(self, message):
         print("Error: " + message)
 
-    def on_fatal_error(self):
-        print("Fatal error")
+    def on_disconnect(self):
+        print("Connection to robot lost.")
