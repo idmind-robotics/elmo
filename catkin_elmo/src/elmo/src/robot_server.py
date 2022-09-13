@@ -53,7 +53,7 @@ class Robot:
         self.behaviour_test_leds = False
         self.speech_list = []
         self.sound_list = []
-        self.face_list = []
+        self.image_list = []
         self.icon_list = []
         self.volume = 0
         self.video_port = "8081"
@@ -92,7 +92,7 @@ class Robot:
         # server
         self.speech_list = self.server_api.get_speech_list()
         self.sound_list = self.server_api.get_sound_list()
-        self.face_list = self.server_api.get_image_list()
+        self.image_list = self.server_api.get_image_list()
         self.icon_list = self.server_api.get_icon_list()
 
     def enable_test_motors(self, control):
