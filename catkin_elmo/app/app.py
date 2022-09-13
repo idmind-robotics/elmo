@@ -103,7 +103,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.log("Application running.")
 
         # scan robots on startup
-        robot_client.set_robot_model("Elmo")
+        robot_client.set_robot_model("elmo")
         self.robot = None
         self.scan_network.clicked.connect(self.scan_robots)
         self.shutdown.clicked.connect(self.do_shutdown)
