@@ -274,7 +274,7 @@ def command():
 def quick_connect():
     udp_ip = "0.0.0.0"
     udp_port = 5000
-    response = b"iamarobot;elmo;ELMO OG;8001"
+    response = b"iamarobot;elmo;ELMO 001;8001"
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((udp_ip, udp_port))
     while True:
