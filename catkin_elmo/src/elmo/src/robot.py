@@ -10,6 +10,7 @@ import rospy
 from elmo.msg import Colors, TouchEvent, PanTilt as PanTiltMsg
 from std_msgs.msg import ColorRGBA
 from std_msgs.msg import String
+from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
 import os
 import threading
@@ -24,16 +25,38 @@ class Leds:
         self.pub = rospy.Publisher("leds/colors", Colors, queue_size=10)
 
     def load_from_url(self, url):
-        msg = Colors()
-        response = requests.get(url)
-        img = BytesIO(response.content)
-        image = Image.open(img)
-        for row in range(13):
-            for col in range(13):
-                # color = image.getpixel((col, 12 - row))
-                color = image.getpixel((12 - col, row))
-                msg.colors.append(ColorRGBA(r=color[0], g=color[1], b=color[2], a=0))
-        self.pub.publish(msg)
+        # gif
+        if ".gif" in url:
+            print("loading gif")
+            response = requests.get(url)
+            img = BytesIO(response.content)
+            image = Image.open(img)
+            try:
+                while 1:
+                    image.seek(image.tell() + 1)
+                    print(image.info["duration"])
+                    msg = Colors()
+                    for row in range(13):
+                        for col in range(13):
+                            im = image.convert("RGB")
+                            color = im.getpixel((12 - col, row))
+                            msg.colors.append(ColorRGBA(r=color[0], g=color[1], b=color[2], a=0))
+                    self.pub.publish(msg)
+                    rospy.sleep(image.info["duration"] / 1000.0)
+            except EOFError:
+                msg = Colors()
+                self.pub.publish(msg)
+        else:
+            msg = Colors()
+            response = requests.get(url)
+            img = BytesIO(response.content)
+            image = Image.open(img)
+            for row in range(13):
+                for col in range(13):
+                    # color = image.getpixel((col, 12 - row))
+                    color = image.getpixel((12 - col, row))
+                    msg.colors.append(ColorRGBA(r=color[0], g=color[1], b=color[2], a=0))
+            self.pub.publish(msg)
 
     def set_colors(self, colors):
         msg = Colors()
@@ -283,13 +306,15 @@ class PanTilt:
 
 class Sound:
 
+    def __init__(self):
+        self.url_pub = rospy.Publisher("speakers/url", String, queue_size=10)
+        self.volume_pub = rospy.Publisher("speakers/volume", Int32, queue_size=10)
+
     def play_sound_from_url(self, url):
-        os.system("curl %s | aplay" % url)
+        self.url_pub.publish(url)
 
     def set_volume(self, v):
-        print("SET VOLUME")
-        print(v)
-        os.system("amixer sset 'Master' {}%".format(v))
+        self.volume_pub.publish(v)
 
 
 class Power:

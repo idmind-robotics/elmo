@@ -33,9 +33,10 @@ class Node:
         if msg.data != "test_motors" or not self.enabled:
             return
         print("disabling test motors")
-        self.pan_tilt_api.reset_angles()
-        self.pan_tilt_api.enable(False, False)
         self.enabled = False
+        self.pan_tilt_api.reset_angles()
+        rospy.sleep(2.0)
+        self.pan_tilt_api.enable(False, False)
         rospy.set_param("behaviour/test_motors/enabled", self.enabled)
 
     def run(self):

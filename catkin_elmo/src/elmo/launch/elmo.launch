@@ -1,7 +1,7 @@
 <launch>
     <rosparam subst_value="true">
         touch:
-            head_threshold: 112
+            head_threshold: 110
             chest_threshold: 145
         pan_tilt:
             pan_id: 3
@@ -12,7 +12,7 @@
             tilt_d: 20
             min_pan_angle: 50
             max_pan_angle: 110
-            min_tilt_angle: -15
+            min_tilt_angle: -20
             max_tilt_angle: 15
             min_playtime: 10
             max_playtime: 100
@@ -35,5 +35,7 @@
     <!-- test nodes -->
     <node pkg="elmo" output="screen" type="test_motors.py"      name="test_pan_tilt" />
     <node pkg="elmo" output="screen" type="test_leds.py"        name="test_leds" />
+    <!-- startup routine -->
+    <node pkg="elmo" output="screen" type="start_routine.py"    name="start_routine" />
 
 </launch>
