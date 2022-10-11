@@ -8,6 +8,7 @@ import rospy
 from utils import linterpol
 
 from elmo.msg import PanTilt
+from std_srvs.srv import Trigger
 
 
 
@@ -57,6 +58,7 @@ class Node:
         self.command_playtime = 0
         self.status_pub = rospy.Publisher("pan_tilt/status", PanTilt, queue_size=10)
         rospy.Subscriber("pan_tilt/command", PanTilt, self.on_command)
+        rospy.Service("pan_tilt/reload_params", Trigger, self.on_reload_params)
 
         if DEBUG:
             def set_pan(angle, playtime, _):
@@ -100,6 +102,14 @@ class Node:
             # limit upper playtime bound
             if self.command_playtime > self.max_playtime:
                 self.command_playtime = self.max_playtime
+
+    def on_reload_params(self, _):
+        self.max_pan_angle = rospy.get_param("pan_tilt/max_pan_angle")
+        self.min_pan_angle = rospy.get_param("pan_tilt/min_pan_angle")
+        self.max_tilt_angle = rospy.get_param("pan_tilt/max_tilt_angle")
+        self.min_tilt_angle = rospy.get_param("pan_tilt/min_tilt_angle")
+        self.min_playtime = rospy.get_param("pan_tilt/min_playtime")
+        self.max_playtime = rospy.get_param("pan_tilt/max_playtime")
 
     def run(self):
         rate = rospy.Rate(LOOP_RATE)

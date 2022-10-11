@@ -56,9 +56,9 @@ class ScanRobotsDialog(QDialog):
         layout = QVBoxLayout()
 
         robots_container = QWidget()
-        self.robots = QVBoxLayout()
-        robots_container.setLayout(self.robots)
-        self.robot_names = []
+        self.clients = QVBoxLayout()
+        robots_container.setLayout(self.clients)
+        self.client_names = []
 
         button_box = QDialogButtonBox(QDialogButtonBox.Cancel)
         button_box.rejected.connect(self.reject)
@@ -77,11 +77,11 @@ class ScanRobotsDialog(QDialog):
 
     @pyqtSlot(str, str)
     def on_new_robot(self, name, address):
-        if name not in self.robot_names:
+        if name not in self.client_names:
             btn = QPushButton(name + ": " + address)
             btn.clicked.connect(lambda: self.connect(address))
-            self.robots.addWidget(btn)
-            self.robot_names.append(name)
+            self.clients.addWidget(btn)
+            self.client_names.append(name)
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -104,7 +104,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # scan robots on startup
         robot_client.set_robot_model("elmo")
-        self.robot = None
+        self.client = None
         self.scan_network.clicked.connect(self.scan_robots)
         self.shutdown.clicked.connect(self.do_shutdown)
         self.scan_robots()
@@ -114,7 +114,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.status_bar.showMessage(msg, duration)
 
     def disconnect(self):
-        self.robot = None
+        self.client = None
         QMessageBox.warning(self, "Disconnect", "Connection to robot lost!")
         self.scan_robots()
 
@@ -139,15 +139,15 @@ class Window(QMainWindow, Ui_MainWindow):
         robot_client.stop_scan()
 
     def do_shutdown(self):
-        if self.robot is not None:
+        if self.client is not None:
             if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Shutdown?", buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                self.robot.send_command("shutdown")
+                self.client.send_command("shutdown")
 
     def connect(self, address):
-        success, message, self.robot = robot_client.connect(address)
+        success, message, self.client = robot_client.connect(address)
         if success:
-            self.robot.on_error = self.log
-            self.robot.on_disconnect = self.disconnect
+            self.client.on_error = self.log
+            self.client.on_disconnect = self.disconnect
             self.dialog.close()
             self.log("Connected to robot at %s" % address)
         else:
@@ -164,20 +164,23 @@ class Window(QMainWindow, Ui_MainWindow):
                     palette.green(),
                     palette.blue(),
                 ))
-        self.robot.send_command("update_leds", colors=leds)
+        self.client.send_command("update_leds", colors=leds)
 
     def initialize_touch(self):
-        def update_threshold():
-            if self.robot is not None:
+        def update_thresholds():
+            if self.client is not None:
                 if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Update touch threshold?", buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                    self.robot.send_command("update_touch_threshold", threshold=self.touch_set_threshold.value())
-        self.touch_update_threshold.clicked.connect(update_threshold)
+                    self.client.send_command(
+                        "update_touch_thresholds",
+                        head=self.touch_set_head_threshold.value(),
+                        chest=self.touch_set_chest_threshold.value())
+        self.touch_update_threshold.clicked.connect(update_thresholds)
 
     def initialize_leds(self):
         self.icon_list = []
         def update_icon():
             name = self.leds_icon_list.currentText()
-            self.robot.send_command("update_leds_icon", name=name)
+            self.client.send_command("update_leds_icon", name=name)
         self.leds_icon_update.clicked.connect(update_icon)
         
         # color picker
@@ -249,7 +252,7 @@ class Window(QMainWindow, Ui_MainWindow):
         def update_motor_limits():
             def f():
                 if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Update motor limits?", buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                    self.robot.send_command(
+                    self.client.send_command(
                         "update_motor_limits",
                         pan_min=self.motors_set_pan_min.value(),
                         pan_max=self.motors_set_pan_max.value(),
@@ -258,41 +261,41 @@ class Window(QMainWindow, Ui_MainWindow):
                     )
             return f
         self.motors_update_limits.clicked.connect(update_motor_limits())
-        self.motors_pan.sliderReleased.connect(lambda: self.robot.send_command("set_pan", angle=self.motors_pan.value()))
-        self.motors_tilt.sliderReleased.connect(lambda: self.robot.send_command("set_tilt", angle=self.motors_tilt.value()))
-        self.motors_pan_torque_on.clicked.connect(lambda: self.robot.send_command("set_pan_torque", control=True))
-        self.motors_pan_torque_off.clicked.connect(lambda: self.robot.send_command("set_pan_torque", control=False))
-        self.motors_tilt_torque_on.clicked.connect(lambda: self.robot.send_command("set_tilt_torque", control=True))
-        self.motors_tilt_torque_off.clicked.connect(lambda: self.robot.send_command("set_tilt_torque", control=False))
+        self.motors_pan.sliderReleased.connect(lambda: self.client.send_command("set_pan", angle=self.motors_pan.value()))
+        self.motors_tilt.sliderReleased.connect(lambda: self.client.send_command("set_tilt", angle=self.motors_tilt.value()))
+        self.motors_pan_torque_on.clicked.connect(lambda: self.client.send_command("set_pan_torque", control=True))
+        self.motors_pan_torque_off.clicked.connect(lambda: self.client.send_command("set_pan_torque", control=False))
+        self.motors_tilt_torque_on.clicked.connect(lambda: self.client.send_command("set_tilt_torque", control=True))
+        self.motors_tilt_torque_off.clicked.connect(lambda: self.client.send_command("set_tilt_torque", control=False))
 
     def initialize_behaviours(self):
         def enable_test_motors(checked):
-            self.robot.send_command("enable_behaviour", name="test_motors", control=checked)
+            self.client.send_command("enable_behaviour", name="test_motors", control=checked)
         self.behaviour_test_motors.stateChanged.connect(enable_test_motors)
         def enable_test_leds(checked):
-            self.robot.send_command("enable_behaviour", name="test_leds", control=checked)
+            self.client.send_command("enable_behaviour", name="test_leds", control=checked)
         self.behaviour_test_leds.stateChanged.connect(enable_test_leds)
 
     def initialize_audio(self):
         self.speech_list = []
         self.sound_list = []
         def play_sound():
-            self.robot.send_command("play_sound", name=self.audio_sound_list.currentText())
+            self.client.send_command("play_sound", name=self.audio_sound_list.currentText())
         self.audio_play_sound.clicked.connect(play_sound)
         def play_speech():
-            self.robot.send_command("play_speech", name=self.audio_speech_list.currentText())
+            self.client.send_command("play_speech", name=self.audio_speech_list.currentText())
         self.audio_play_speech.clicked.connect(play_speech)
         def pause_audio():
-            self.robot.send_command("pause_audio")
+            self.client.send_command("pause_audio")
         self.audio_pause.clicked.connect(pause_audio)
         def set_volume():
-            self.robot.send_command("set_volume", volume=self.audio_volume.value())
+            self.client.send_command("set_volume", volume=self.audio_volume.value())
         self.audio_volume.sliderReleased.connect(set_volume)
 
     def initialize_screen(self):
         self.image_list = []
         def clear_screen():
-            self.robot.send_command(
+            self.client.send_command(
                 "set_screen",
                 image="",
                 text="",
@@ -301,7 +304,7 @@ class Window(QMainWindow, Ui_MainWindow):
             )
         def update_screen():
             def f():
-                self.robot.send_command(
+                self.client.send_command(
                     "set_screen",
                     image="" if self.screen_image_list.currentText() == "<None>" else self.screen_image_list.currentText(),
                     text=self.screen_text.text(),
@@ -316,52 +319,52 @@ class Window(QMainWindow, Ui_MainWindow):
         def upload_image():
             filename, _ = QFileDialog.getOpenFileName(self, 'Upload Image', '.')
             if filename:
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.image_address
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.image_address
                 requests.post(url, files={'file': open(filename, 'rb')})
         self.multimedia_image_upload.clicked.connect(upload_image)
         def upload_icon():
             filename, _ = QFileDialog.getOpenFileName(self, 'Upload Icon', '.')
             if filename:
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.icon_address
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.icon_address
                 requests.post(url, files={'file': open(filename, 'rb')})
         self.multimedia_icon_upload.clicked.connect(upload_icon)
         def upload_speech():
             filename, _ = QFileDialog.getOpenFileName(self, 'Upload Speech', '.')
             if filename:
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.speech_address
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.speech_address
                 requests.post(url, files={'file': open(filename, 'rb')})
         self.multimedia_speech_upload.clicked.connect(upload_speech)
         def upload_sound():
             filename, _ = QFileDialog.getOpenFileName(self, 'Upload Sound', '.')
             if filename:
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.sound_address
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.sound_address
                 requests.post(url, files={'file': open(filename, 'rb')})
         self.multimedia_sound_upload.clicked.connect(upload_sound)
         def delete_image():
             filename = self.multimedia_image_list.currentText()
             if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Delete image %s?" % filename, buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.image_address + "/" + filename
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.image_address + "/" + filename
                 print("delete: " + url)
                 requests.delete(url)
         self.multimedia_image_delete.clicked.connect(delete_image)
         def delete_icon():
             filename = self.multimedia_icon_list.currentText()
             if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Delete icon %s?" % filename, buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.icon_address + "/" + filename
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.icon_address + "/" + filename
                 print("delete: " + url)
                 requests.delete(url)
         self.multimedia_icon_delete.clicked.connect(delete_icon)
         def delete_speech():
             filename = self.multimedia_speech_list.currentText()
             if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Delete speech %s?" % filename, buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.speech_address + "/" + filename
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.speech_address + "/" + filename
                 print("delete: " + url)
                 requests.delete(url)
         self.multimedia_speech_delete.clicked.connect(delete_speech)
         def delete_sound():
             filename = self.multimedia_sound_list.currentText()
             if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Delete sound %s?" % filename, buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                url = "http://" + self.robot.ip + ":" + str(self.robot.multimedia_port) + self.robot.sound_address + "/" + filename
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.sound_address + "/" + filename
                 print("delete: " + url)
                 requests.delete(url)
         self.multimedia_sound_delete.clicked.connect(delete_sound)
@@ -372,53 +375,54 @@ class Window(QMainWindow, Ui_MainWindow):
                 ssid = self.wifi_ssid.text()
                 password = self.wifi_password.text()
                 print("updating credentials")
-                if self.robot.send_command("update_wifi_credentials", ssid=ssid, password=password):
+                if self.client.send_command("update_wifi_credentials", ssid=ssid, password=password):
                     QMessageBox.information(self, "Configuration updated", "Changes will take effect after a restart")
         self.wifi_update.clicked.connect(update_wifi_credentials)
 
     def update(self):
-        if self.robot is not None:
-            self.robot.update_status()
-            self.motors_pan.setRange(self.robot.pan_min, self.robot.pan_max)
-            self.motors_pan_min.setNum(self.robot.pan_min)
-            self.motors_pan_max.setNum(self.robot.pan_max)
-            self.motors_pan_value.setNum(self.robot.pan)
-            self.motors_pan_torque.setChecked(self.robot.pan_torque)
-            self.motors_tilt.setRange(self.robot.tilt_min, self.robot.tilt_max)
-            self.motors_tilt_min.setNum(self.robot.tilt_min)
-            self.motors_tilt_max.setNum(self.robot.tilt_max)
-            self.motors_tilt_value.setNum(self.robot.tilt)
-            self.motors_tilt_torque.setChecked(self.robot.tilt_torque)
-            self.touch_chest.setChecked(self.robot.touch_chest)
-            self.touch_head_n.setChecked(self.robot.touch_head_n)
-            self.touch_head_s.setChecked(self.robot.touch_head_s)
-            self.touch_head_e.setChecked(self.robot.touch_head_e)
-            self.touch_head_w.setChecked(self.robot.touch_head_w)
-            self.touch_threshold.setNum(self.robot.touch_threshold)
-            if self.robot.icon_list != self.icon_list:
+        if self.client is not None:
+            self.client.update_status()
+            self.motors_pan.setRange(self.client.pan_min, self.client.pan_max)
+            self.motors_pan_min.setNum(self.client.pan_min)
+            self.motors_pan_max.setNum(self.client.pan_max)
+            self.motors_pan_value.setNum(self.client.pan)
+            self.motors_pan_torque.setChecked(self.client.pan_torque)
+            self.motors_tilt.setRange(self.client.tilt_min, self.client.tilt_max)
+            self.motors_tilt_min.setNum(self.client.tilt_min)
+            self.motors_tilt_max.setNum(self.client.tilt_max)
+            self.motors_tilt_value.setNum(self.client.tilt)
+            self.motors_tilt_torque.setChecked(self.client.tilt_torque)
+            self.touch_chest.setChecked(self.client.touch_chest)
+            self.touch_head_n.setChecked(self.client.touch_head_n)
+            self.touch_head_s.setChecked(self.client.touch_head_s)
+            self.touch_head_e.setChecked(self.client.touch_head_e)
+            self.touch_head_w.setChecked(self.client.touch_head_w)
+            self.touch_head_threshold.setNum(self.client.touch_head_threshold)
+            self.touch_chest_threshold.setNum(self.client.touch_chest_threshold)
+            if self.client.icon_list != self.icon_list:
                 self.leds_icon_list.clear()
-                self.leds_icon_list.addItems(self.robot.icon_list)
+                self.leds_icon_list.addItems(self.client.icon_list)
                 self.multimedia_icon_list.clear()
-                self.multimedia_icon_list.addItems(self.robot.icon_list)
-                self.icon_list = self.robot.icon_list
-            if self.robot.speech_list != self.speech_list:
+                self.multimedia_icon_list.addItems(self.client.icon_list)
+                self.icon_list = self.client.icon_list
+            if self.client.speech_list != self.speech_list:
                 self.audio_speech_list.clear()
-                self.audio_speech_list.addItems(self.robot.speech_list)
+                self.audio_speech_list.addItems(self.client.speech_list)
                 self.multimedia_speech_list.clear()
-                self.multimedia_speech_list.addItems(self.robot.speech_list)
-                self.speech_list = self.robot.speech_list
-            if self.robot.sound_list != self.sound_list:
+                self.multimedia_speech_list.addItems(self.client.speech_list)
+                self.speech_list = self.client.speech_list
+            if self.client.sound_list != self.sound_list:
                 self.audio_sound_list.clear()
-                self.audio_sound_list.addItems(self.robot.sound_list)
+                self.audio_sound_list.addItems(self.client.sound_list)
                 self.multimedia_sound_list.clear()
-                self.multimedia_sound_list.addItems(self.robot.sound_list)
-                self.sound_list = self.robot.sound_list
-            if self.robot.face_list != self.image_list:
+                self.multimedia_sound_list.addItems(self.client.sound_list)
+                self.sound_list = self.client.sound_list
+            if self.client.face_list != self.image_list:
                 self.screen_image_list.clear()
-                self.screen_image_list.addItems(["<None>"] + self.robot.face_list)
+                self.screen_image_list.addItems(["<None>"] + self.client.face_list)
                 self.multimedia_image_list.clear()
-                self.multimedia_image_list.addItems(self.robot.face_list)
-                self.image_list = self.robot.face_list
+                self.multimedia_image_list.addItems(self.client.face_list)
+                self.image_list = self.client.face_list
 
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update)

@@ -1,6 +1,3 @@
-#! /usr/bin/env python3
-
-
 import socket
 import netifaces
 import requests
@@ -69,6 +66,7 @@ class Robot:
 
     def __init__(self, address):
         self.address = address
+        self.ip = address.split(":")[1][2:]
 
     def update_status(self):
         try:

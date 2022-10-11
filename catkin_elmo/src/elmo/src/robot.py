@@ -10,6 +10,7 @@ import rospy
 from elmo.msg import Colors, TouchEvent, PanTilt as PanTiltMsg
 from std_msgs.msg import ColorRGBA
 from std_msgs.msg import String
+from std_srvs.srv import Trigger
 import os
 import threading
 
@@ -162,10 +163,10 @@ class Onboard:
 
 class Touch:
     CHEST = 0
-    HEAD_N = 1
-    HEAD_S = 2
+    HEAD_W = 1
+    HEAD_N = 2
     HEAD_E = 3
-    HEAD_W = 4
+    HEAD_S = 4
 
     def __init__(self):
         self.touch_status = [
@@ -201,11 +202,17 @@ class Touch:
     def on_touch_chest(self, cb):
         self.callbacks[Touch.CHEST].append(cb)
 
-    def get_touch_threshold(self):
-        return rospy.get_param("touch/threshold")
+    def get_touch_head_threshold(self):
+        return rospy.get_param("touch/head_threshold")
+
+    def get_touch_chest_threshold(self):
+        return rospy.get_param("touch/chest_threshold")
     
-    def set_touch_threshold(self, threshold):
-        rospy.set_param("touch/threshold", threshold)
+    def set_touch_head_threshold(self, threshold):
+        rospy.set_param("touch/head_threshold", threshold)
+    
+    def set_touch_chest_threshold(self, threshold):
+        rospy.set_param("touch/chest_threshold", threshold)
 
 
 class PanTilt:
@@ -215,6 +222,7 @@ class PanTilt:
             self.status = msg
         rospy.Subscriber("pan_tilt/status", PanTiltMsg, on_status)
         self.command_pub = rospy.Publisher("pan_tilt/command", PanTiltMsg, queue_size=1)
+        self.reload_params_srv = rospy.ServiceProxy("pan_tilt/reload_params", Trigger)
             
     def get_limits(self):
         return {
@@ -228,9 +236,10 @@ class PanTilt:
 
     def set_limits(self, min_pan_angle, max_pan_angle, min_tilt_angle, max_tilt_angle):
         rospy.set_param("pan_tilt/min_pan_angle", min_pan_angle)
-        rospy.set_param("pan_tilt/max_pan_angle"), max_pan_angle
+        rospy.set_param("pan_tilt/max_pan_angle", max_pan_angle)
         rospy.set_param("pan_tilt/min_tilt_angle", min_tilt_angle)
         rospy.set_param("pan_tilt/max_tilt_angle", max_tilt_angle)
+        self.reload_params_srv()
 
     def get_status(self):
         return {

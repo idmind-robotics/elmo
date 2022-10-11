@@ -48,7 +48,8 @@ class Robot:
         self.touch_head_s = False
         self.touch_head_e = False
         self.touch_head_w = False
-        self.touch_threshold = 0
+        self.touch_head_threshold = 0
+        self.touch_chest_threshold = 0
         self.behaviour_test_motors = False
         self.behaviour_test_leds = False
         self.speech_list = []
@@ -85,7 +86,8 @@ class Robot:
         self.touch_head_s = self.touch_api.touch_status[r.Touch.HEAD_S]
         self.touch_head_e = self.touch_api.touch_status[r.Touch.HEAD_E]
         self.touch_head_w = self.touch_api.touch_status[r.Touch.HEAD_W]
-        self.touch_threshold = self.touch_api.get_touch_threshold()
+        self.touch_head_threshold = self.touch_api.get_touch_head_threshold()
+        self.touch_chest_threshold = self.touch_api.get_touch_chest_threshold()
         # behaviours
         self.behaviour_test_motors = self.behaviour_api.is_behaviour_enabled("test_motors")
         self.behaviour_test_motors = self.behaviour_api.is_behaviour_enabled("test_leds")
@@ -172,8 +174,9 @@ class Robot:
             self.onboard_api.set_image(url)
         return True, "OK"
 
-    def update_touch_threshold(self, threshold):
-        self.touch_api.set_touch_threshold(threshold)
+    def update_touch_thresholds(self, head, chest):
+        self.touch_api.set_touch_head_threshold(head)
+        self.touch_api.set_touch_chest_threshold(chest)
         return True, "OK"
 
     def shutdown(self):

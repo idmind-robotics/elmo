@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1078</width>
-    <height>629</height>
+    <width>834</width>
+    <height>834</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -24,248 +24,404 @@
     <normaloff>:/res/icon.ico</normaloff>:/res/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>15</x>
-      <y>12</y>
-      <width>1051</width>
-      <height>586</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_10" columnstretch="1,0,0,0,1">
-     <item row="7" column="3" colspan="2">
+   <layout class="QGridLayout" name="gridLayout_8">
+    <item row="0" column="0" colspan="3">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>661</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="3" colspan="2">
+     <widget class="QPushButton" name="scan_network">
+      <property name="text">
+       <string>Scan Network</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" rowspan="3">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Leds</string>
+      </property>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_30">
-         <property name="text">
-          <string>Min</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_31">
-         <property name="text">
-          <string>Max</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QSpinBox" name="motors_set_pan_min">
+       <item row="0" column="0" rowspan="6" colspan="3">
+        <widget class="QWidget" name="leds_matrix_container" native="true">
          <property name="minimumSize">
           <size>
-           <width>0</width>
-           <height>0</height>
+           <width>260</width>
+           <height>260</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
-           <height>16777215</height>
+           <width>260</width>
+           <height>260</height>
           </size>
          </property>
-         <property name="minimum">
-          <number>-999</number>
-         </property>
-         <property name="maximum">
-          <number>999</number>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="leds_matrix">
+            <property name="spacing">
+             <number>1</number>
+            </property>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QSpinBox" name="motors_set_pan_max">
-         <property name="maximumSize">
-          <size>
-           <width>60</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="minimum">
-          <number>-999</number>
-         </property>
-         <property name="maximum">
-          <number>999</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2" rowspan="2">
-        <widget class="QPushButton" name="motors_update_limits">
+       <item row="0" column="3" colspan="2">
+        <widget class="QLabel" name="label_47">
          <property name="text">
-          <string>Update
-Motor
-Limits</string>
+          <string>W - Paint</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QSpinBox" name="motors_set_tilt_min">
-         <property name="maximumSize">
-          <size>
-           <width>60</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="minimum">
-          <number>-999</number>
-         </property>
-         <property name="maximum">
-          <number>999</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QSpinBox" name="motors_set_tilt_max">
-         <property name="minimum">
-          <number>-999</number>
-         </property>
-         <property name="maximum">
-          <number>999</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="11" column="3">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>220</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Leds</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QLabel" name="label_34">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Screen</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0" rowspan="3">
-      <layout class="QGridLayout" name="gridLayout_8" columnstretch="0,1,0,0">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_39">
+       <item row="0" column="5" colspan="2">
+        <widget class="QLabel" name="label_48">
          <property name="text">
-          <string>Images</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="multimedia_image_list"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="multimedia_image_delete">
-         <property name="text">
-          <string>Delete</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="multimedia_image_upload">
-         <property name="text">
-          <string>Upload</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_40">
-         <property name="text">
-          <string>Icons</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="multimedia_icon_list"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="multimedia_icon_delete">
-         <property name="text">
-          <string>Delete</string>
+          <string>C - Clear</string>
          </property>
         </widget>
        </item>
        <item row="1" column="3">
-        <widget class="QPushButton" name="multimedia_icon_upload">
+        <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Upload</string>
+          <string>r</string>
          </property>
         </widget>
        </item>
+       <item row="1" column="4" colspan="2">
+        <widget class="QSlider" name="leds_r">
+         <property name="maximum">
+          <number>255</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLabel" name="label_7">
+         <property name="minimumSize">
+          <size>
+           <width>10</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>g</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4" colspan="2">
+        <widget class="QSlider" name="leds_g">
+         <property name="maximum">
+          <number>255</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="6">
+        <widget class="QLabel" name="label_8">
+         <property name="minimumSize">
+          <size>
+           <width>10</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>b</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4" colspan="2">
+        <widget class="QSlider" name="leds_b">
+         <property name="maximum">
+          <number>255</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="6">
+        <widget class="QLabel" name="label_9">
+         <property name="minimumSize">
+          <size>
+           <width>10</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4" colspan="2">
+        <widget class="QLabel" name="leds_preview">
+         <property name="baseSize">
+          <size>
+           <width>15</width>
+           <height>15</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="margin">
+          <number>30</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3" colspan="2">
+        <widget class="QPushButton" name="leds_all">
+         <property name="text">
+          <string>All</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="5" colspan="2">
+        <widget class="QPushButton" name="leds_none">
+         <property name="text">
+          <string>None</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Icon</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QComboBox" name="leds_icon_list">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2" colspan="2">
+        <widget class="QPushButton" name="leds_icon_update">
+         <property name="text">
+          <string>Update</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="1" colspan="4">
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="title">
+       <string>Screen</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_14">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_35">
+         <property name="text">
+          <string>Image</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QComboBox" name="screen_image_list"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_36">
+         <property name="text">
+          <string>Text</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QLineEdit" name="screen_text"/>
+       </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_41">
+        <widget class="QLabel" name="label_37">
+         <property name="text">
+          <string>Url</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QLineEdit" name="screen_url"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="screen_camera">
+         <property name="text">
+          <string>Camera</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="screen_clear">
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="screen_update">
+         <property name="text">
+          <string>Update</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="4">
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="title">
+       <string>Audio</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_16">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_29">
          <property name="text">
           <string>Speech</string>
          </property>
         </widget>
        </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QComboBox" name="audio_speech_list"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="audio_play_speech">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/res/icons/control.png</normaloff>:/res/icons/control.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_32">
+         <property name="text">
+          <string>Sound</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QComboBox" name="audio_sound_list"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="audio_play_sound">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/res/icons/control.png</normaloff>:/res/icons/control.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_33">
+         <property name="text">
+          <string>Volume</string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="1">
-        <widget class="QComboBox" name="multimedia_speech_list"/>
+        <widget class="QSlider" name="audio_volume">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
        <item row="2" column="2">
-        <widget class="QPushButton" name="multimedia_speech_delete">
+        <widget class="QLabel" name="label_43">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Delete</string>
+          <string>0</string>
          </property>
         </widget>
        </item>
        <item row="2" column="3">
-        <widget class="QPushButton" name="multimedia_speech_upload">
+        <widget class="QPushButton" name="audio_pause">
          <property name="text">
-          <string>Upload</string>
+          <string/>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_42">
-         <property name="text">
-          <string>Sounds</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="multimedia_sound_list"/>
-       </item>
-       <item row="3" column="2">
-        <widget class="QPushButton" name="multimedia_sound_delete">
-         <property name="text">
-          <string>Delete</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QPushButton" name="multimedia_sound_upload">
-         <property name="text">
-          <string>Upload</string>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/res/icons/control-pause.png</normaloff>:/res/icons/control-pause.png</iconset>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="7" column="0" colspan="3">
-      <layout class="QGridLayout" name="gridLayout">
+     </widget>
+    </item>
+    <item row="3" column="1" colspan="4">
+     <widget class="QGroupBox" name="groupBox_9">
+      <property name="title">
+       <string>Wifi</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="wifi_ssid">
+         <property name="placeholderText">
+          <string>ssid</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="wifi_password">
+         <property name="placeholderText">
+          <string>password</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="wifi_update">
+         <property name="text">
+          <string>Update</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="2">
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="title">
+       <string>Motors</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="1">
         <widget class="QLabel" name="label_14">
          <property name="text">
@@ -502,595 +658,360 @@ Limits</string>
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="1" column="1" colspan="2">
+     </widget>
+    </item>
+    <item row="4" column="2" colspan="3">
+     <widget class="QGroupBox" name="groupBox_7">
+      <property name="title">
+       <string>Motor Limits</string>
+      </property>
       <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_30">
+         <property name="text">
+          <string>Min</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
-        <widget class="QLabel" name="label_35">
+        <widget class="QLabel" name="label_31">
          <property name="text">
-          <string>Image</string>
+          <string>Max</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_36">
-         <property name="text">
-          <string>Text</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2" colspan="2">
-        <widget class="QLineEdit" name="screen_text"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_37">
-         <property name="text">
-          <string>Url</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2" colspan="2">
-        <widget class="QLineEdit" name="screen_url"/>
-       </item>
-       <item row="3" column="3">
-        <widget class="QPushButton" name="screen_update">
-         <property name="text">
-          <string>Update</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2" colspan="2">
-        <widget class="QComboBox" name="screen_image_list"/>
-       </item>
-       <item row="3" column="2">
-        <widget class="QPushButton" name="screen_clear">
-         <property name="text">
-          <string>Clear</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QCheckBox" name="screen_camera">
-         <property name="text">
-          <string>Camera</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0" rowspan="5">
-      <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,1,0,0,0,0">
-       <item row="0" column="2" colspan="2">
-        <widget class="QLabel" name="label_47">
-         <property name="text">
-          <string>W - Paint</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4" colspan="2">
-        <widget class="QLabel" name="label_48">
-         <property name="text">
-          <string>C - Clear</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>r</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3" colspan="2">
-        <widget class="QSlider" name="leds_r">
-         <property name="maximum">
-          <number>255</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="5">
-        <widget class="QLabel" name="label_7">
+       <item row="1" column="0">
+        <widget class="QSpinBox" name="motors_set_pan_min">
          <property name="minimumSize">
           <size>
-           <width>10</width>
+           <width>0</width>
            <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>g</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3" colspan="2">
-        <widget class="QSlider" name="leds_g">
-         <property name="maximum">
-          <number>255</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="5">
-        <widget class="QLabel" name="label_8">
-         <property name="minimumSize">
-          <size>
-           <width>10</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>b</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3" colspan="2">
-        <widget class="QSlider" name="leds_b">
-         <property name="maximum">
-          <number>255</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="5">
-        <widget class="QLabel" name="label_9">
-         <property name="minimumSize">
-          <size>
-           <width>10</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3" colspan="2">
-        <widget class="QLabel" name="leds_preview">
-         <property name="baseSize">
-          <size>
-           <width>15</width>
-           <height>15</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="margin">
-          <number>30</number>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2" colspan="2">
-        <widget class="QPushButton" name="leds_all">
-         <property name="text">
-          <string>All</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="4" colspan="2">
-        <widget class="QPushButton" name="leds_none">
-         <property name="text">
-          <string>None</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Icon</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="4" colspan="2">
-        <widget class="QPushButton" name="leds_icon_update">
-         <property name="text">
-          <string>Update</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" rowspan="6" colspan="2">
-        <widget class="QWidget" name="leds_matrix_container" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>260</width>
-           <height>260</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>260</width>
-           <height>260</height>
+           <width>60</width>
+           <height>16777215</height>
           </size>
          </property>
-         <layout class="QGridLayout" name="gridLayout_11">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="leds_matrix">
-            <property name="spacing">
-             <number>1</number>
-            </property>
-           </layout>
-          </item>
-         </layout>
+         <property name="minimum">
+          <number>-999</number>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
         </widget>
        </item>
-       <item row="6" column="1" colspan="3">
-        <widget class="QComboBox" name="leds_icon_list">
-         <property name="minimumSize">
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="motors_set_pan_max">
+         <property name="maximumSize">
           <size>
-           <width>150</width>
-           <height>0</height>
+           <width>60</width>
+           <height>16777215</height>
           </size>
+         </property>
+         <property name="minimum">
+          <number>-999</number>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" rowspan="2">
+        <widget class="QPushButton" name="motors_update_limits">
+         <property name="text">
+          <string>Update
+Motor
+Limits</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QSpinBox" name="motors_set_tilt_min">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="minimum">
+          <number>-999</number>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="motors_set_tilt_max">
+         <property name="minimum">
+          <number>-999</number>
+         </property>
+         <property name="maximum">
+          <number>999</number>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="label_28">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Audio</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_38">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Multimedia</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="3">
-      <widget class="QLabel" name="label_46">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Motor Limits</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" rowspan="3" colspan="2">
-      <layout class="QGridLayout" name="gridLayout_4">
+     </widget>
+    </item>
+    <item row="5" column="0" rowspan="2">
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="title">
+       <string>Multimedia</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,0">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_29">
+        <widget class="QLabel" name="label_39">
+         <property name="text">
+          <string>Images</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="multimedia_image_list"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="multimedia_image_delete">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="multimedia_image_upload">
+         <property name="text">
+          <string>Upload</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_40">
+         <property name="text">
+          <string>Icons</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="multimedia_icon_list"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="multimedia_icon_delete">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="multimedia_icon_upload">
+         <property name="text">
+          <string>Upload</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_41">
          <property name="text">
           <string>Speech</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="audio_play_speech">
+       <item row="2" column="1">
+        <widget class="QComboBox" name="multimedia_speech_list"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="multimedia_speech_delete">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="multimedia_speech_upload">
+         <property name="text">
+          <string>Upload</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_42">
+         <property name="text">
+          <string>Sounds</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="multimedia_sound_list"/>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="multimedia_sound_delete">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QPushButton" name="multimedia_sound_upload">
+         <property name="text">
+          <string>Upload</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="5" column="1" colspan="4">
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="title">
+       <string>Touch Sensors</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>Chest</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="touch_chest">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string/>
          </property>
-         <property name="icon">
-          <iconset resource="resource.qrc">
-           <normaloff>:/res/icons/control.png</normaloff>:/res/icons/control.png</iconset>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>Head N</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QCheckBox" name="touch_head_n">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5" colspan="2">
+        <widget class="QLabel" name="label_17">
+         <property name="text">
+          <string>Head E</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QCheckBox" name="touch_head_e">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_32">
+        <widget class="QLabel" name="label_19">
          <property name="text">
-          <string>Sound</string>
+          <string>Head S</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="audio_play_sound">
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="touch_head_s">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string/>
          </property>
-         <property name="icon">
-          <iconset resource="resource.qrc">
-           <normaloff>:/res/icons/control.png</normaloff>:/res/icons/control.png</iconset>
-         </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_33">
+       <item row="1" column="2" colspan="2">
+        <widget class="QLabel" name="label_21">
          <property name="text">
-          <string>Volume</string>
+          <string>Head W</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QSlider" name="audio_volume">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="1" column="4">
+        <widget class="QCheckBox" name="touch_head_w">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="label_43">
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>0</height>
-          </size>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>Head Threshold</string>
          </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLabel" name="touch_head_threshold">
          <property name="text">
           <string>0</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="2">
-        <widget class="QComboBox" name="audio_sound_list"/>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QComboBox" name="audio_speech_list"/>
-       </item>
-       <item row="2" column="3">
-        <widget class="QPushButton" name="audio_pause">
-         <property name="text">
-          <string/>
+       <item row="2" column="4" rowspan="2" colspan="2">
+        <widget class="QSpinBox" name="touch_set_head_threshold">
+         <property name="maximum">
+          <number>1000</number>
          </property>
-         <property name="icon">
-          <iconset resource="resource.qrc">
-           <normaloff>:/res/icons/control-pause.png</normaloff>:/res/icons/control-pause.png</iconset>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Chest Threshold</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4" colspan="2">
+        <widget class="QSpinBox" name="touch_set_chest_threshold"/>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLabel" name="touch_chest_threshold">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="6" rowspan="3" colspan="2">
+        <widget class="QPushButton" name="touch_update_threshold">
+         <property name="text">
+          <string>Update
+Thresholds</string>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Motors</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="3" colspan="2">
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="1" rowspan="2">
-        <layout class="QGridLayout" name="gridLayout_12">
-         <item row="1" column="2">
-          <widget class="QLabel" name="label_21">
-           <property name="text">
-            <string>Head W</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QCheckBox" name="touch_head_n">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QCheckBox" name="touch_head_e">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="QCheckBox" name="touch_head_w">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_18">
-           <property name="text">
-            <string>Head N</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
-          <widget class="QCheckBox" name="touch_head_s">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QLabel" name="label_19">
-           <property name="text">
-            <string>Head S</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="touch_chest">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_16">
-           <property name="text">
-            <string>Chest</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_17">
-           <property name="text">
-            <string>Head E</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_22">
-           <property name="text">
-            <string>Threshold</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="touch_threshold">
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QSpinBox" name="touch_set_threshold">
-           <property name="maximum">
-            <number>1000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="3" colspan="3">
-          <widget class="QPushButton" name="touch_update_threshold">
-           <property name="text">
-            <string>Update Threshold</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </item>
-     <item row="11" column="4">
-      <layout class="QGridLayout" name="gridLayout_9">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="shutdown">
-         <property name="text">
-          <string>Shutdown</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="scan_network">
-         <property name="text">
-          <string>Scan Network</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="8" column="4" rowspan="3">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="8" column="1">
-      <widget class="QLabel" name="label_27">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Wifi</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1" rowspan="3">
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLineEdit" name="wifi_ssid">
-         <property name="placeholderText">
-          <string>ssid</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="wifi_password">
-         <property name="placeholderText">
-          <string>password</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="wifi_update">
-         <property name="text">
-          <string>Update Credentials</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="3">
-      <widget class="QLabel" name="label_49">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Behaviours</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3" colspan="2">
+     </widget>
+    </item>
+    <item row="6" column="1" colspan="3">
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="title">
+       <string>Behaviours</string>
+      </property>
       <layout class="QGridLayout" name="gridLayout_7">
        <item row="0" column="0">
         <widget class="QCheckBox" name="behaviour_test_motors">
@@ -1105,7 +1026,7 @@ Limits</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="0" column="1">
         <widget class="QCheckBox" name="behaviour_test_leds">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1119,22 +1040,29 @@ Limits</string>
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="2" column="3">
-      <widget class="QLabel" name="label_44">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Touch Sensors</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="3">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>661</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="7" column="4">
+     <widget class="QPushButton" name="shutdown">
+      <property name="text">
+       <string>Shutdown</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QStatusBar" name="status_bar"/>
  </widget>
