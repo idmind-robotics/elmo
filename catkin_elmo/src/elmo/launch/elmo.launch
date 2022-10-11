@@ -8,7 +8,7 @@
             pan_p: 65
             pan_d: 50
             tilt_id: 4
-            tilt_p: 40
+            tilt_p: 75
             tilt_d: 20
             min_pan_angle: 50
             max_pan_angle: 110
