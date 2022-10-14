@@ -8,6 +8,9 @@ from flask import Flask, jsonify, request
 import robot as r
 import rospy
 from werkzeug.utils import secure_filename
+import logging
+
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 
 SERVER_PORT = 8001
@@ -214,9 +217,10 @@ def command():
             if name == "test_leds":
                 success, message = robot.enable_test_leds(control)
             return jsonify({ "success": True, "message": "OK" })
-        elif op == "update_touch_threshold":
-            threshold = req["threshold"]
-            success, message = robot.update_touch_threshold(threshold)
+        elif op == "update_touch_thresholds":
+            head = req["head"]
+            chest = req["chest"]
+            success, message = robot.update_touch_thresholds(head, chest)
         elif op == "set_pan_torque":
             control = req["control"]
             success, message = robot.set_pan_torque(control)

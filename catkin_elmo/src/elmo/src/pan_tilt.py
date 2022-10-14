@@ -75,12 +75,12 @@ class Node:
         self.command_tilt_torque = msg.tilt_torque
         self.command_pan_angle = msg.pan_angle
         self.command_tilt_angle = msg.tilt_angle
-        self.command_playtime = msg.playtime * 100
+        self.command_playtime = msg.playtime * 100 if msg.playtime > 0 else 50
         # ignore 0 values for angle
-        if self.command_pan_angle == 0:
-            self.command_pan_angle = self.status_pan_angle_ref
-        if self.command_tilt_angle == 0:
-            self.command_tilt_angle = self.status_tilt_angle_ref
+        # if self.command_pan_angle == 0:
+        #     self.command_pan_angle = self.status_pan_angle_ref
+        # if self.command_tilt_angle == 0:
+        #     self.command_tilt_angle = self.status_tilt_angle_ref
         # limit range
         self.command_pan_angle = max(self.min_pan_angle, min(self.command_pan_angle, self.max_pan_angle))
         self.command_tilt_angle = max(self.min_tilt_angle, min(self.command_tilt_angle, self.max_tilt_angle))
@@ -102,6 +102,7 @@ class Node:
             # limit upper playtime bound
             if self.command_playtime > self.max_playtime:
                 self.command_playtime = self.max_playtime
+        print("playtime: %d" % self.command_playtime)
 
     def on_reload_params(self, _):
         self.max_pan_angle = rospy.get_param("pan_tilt/max_pan_angle")
@@ -110,6 +111,7 @@ class Node:
         self.min_tilt_angle = rospy.get_param("pan_tilt/min_tilt_angle")
         self.min_playtime = rospy.get_param("pan_tilt/min_playtime")
         self.max_playtime = rospy.get_param("pan_tilt/max_playtime")
+        return True, "OK"
 
     def run(self):
         rate = rospy.Rate(LOOP_RATE)

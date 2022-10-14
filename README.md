@@ -23,7 +23,7 @@ Upon receiving the robot, plug the charger into the charging port on the back of
 
 After the robot powers on it will launch it's programs and attempt to connect to a Wifi, if one is configured.
 
-If the connection to a wifi network is not successfull, the robot will become a wifi hotspot called Elmo, with password "asdf", without quotation marks.
+If the connection to a wifi network is not successfull, the robot will become a wifi hotspot called Elmo, with password "1234567890", without quotation marks.
 
 You can connect to the hotspot and run the companion application.
 

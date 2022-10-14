@@ -34,7 +34,6 @@ class Leds:
             try:
                 while 1:
                     image.seek(image.tell() + 1)
-                    print(image.info["duration"])
                     msg = Colors()
                     for row in range(13):
                         for col in range(13):
@@ -186,10 +185,10 @@ class Onboard:
 
 class Touch:
     CHEST = 0
-    HEAD_W = 1
-    HEAD_N = 2
-    HEAD_E = 3
-    HEAD_S = 4
+    HEAD_N = 4 # 2
+    HEAD_W = 3 # 1
+    HEAD_S = 1 # 4
+    HEAD_E = 2 # 3
 
     def __init__(self):
         self.touch_status = [
