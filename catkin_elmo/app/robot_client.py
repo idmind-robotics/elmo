@@ -32,15 +32,19 @@ def scan_robots(cb, models=[]):
                     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
                     sock.bind((ip,0))
                     sock.sendto(msg, ("255.255.255.255", 5000))
-                    data, address = sock.recvfrom(1024)
-                    if b"iamarobot" in data:
-                        _, robot_model, robot_name, server_port = data.decode("utf-8").split(";")
-                        if CONTEXT["robot_model"]:
-                            if robot_model == CONTEXT["robot_model"]:
-                                cb(robot_name, "http://%s:%s" % (address[0], server_port))
-                        else:
-                            cb(robot_name, "http://%s:%s" % (address[0], server_port))
-                    sock.close()
+                    try:
+                        while True:
+                            data, address = sock.recvfrom(1024)
+                            print(data)
+                            if b"iamarobot" in data:
+                                _, robot_model, robot_name, server_port = data.decode("utf-8").split(";")
+                                if CONTEXT["robot_model"]:
+                                    if robot_model == CONTEXT["robot_model"]:
+                                        cb(robot_name, "http://%s:%s" % (address[0], server_port))
+                                else:
+                                    cb(robot_name, "http://%s:%s" % (address[0], server_port))
+                    except socket.timeout:
+                        sock.close()
             except:
                 pass
     CONTEXT["scanning_robots"] = True

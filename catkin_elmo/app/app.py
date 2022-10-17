@@ -417,12 +417,12 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.multimedia_sound_list.clear()
                 self.multimedia_sound_list.addItems(self.client.sound_list)
                 self.sound_list = self.client.sound_list
-            if self.client.face_list != self.image_list:
+            if self.client.image_list != self.image_list:
                 self.screen_image_list.clear()
-                self.screen_image_list.addItems(["<None>"] + self.client.face_list)
+                self.screen_image_list.addItems(["<None>"] + self.client.image_list)
                 self.multimedia_image_list.clear()
-                self.multimedia_image_list.addItems(self.client.face_list)
-                self.image_list = self.client.face_list
+                self.multimedia_image_list.addItems(self.client.image_list)
+                self.image_list = self.client.image_list
 
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update)

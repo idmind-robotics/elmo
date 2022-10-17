@@ -1,0 +1,6 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0xcb_connection_has_error() returned true
+xcb_connection_has_error() returned true
+Playing WAVE 'stdin' : Signed 16 bit Little Endian, Rate 44100 Hz, Stereo
+ 55  559k   55  312k    0     0   361k      0  0:00:01 --:--:--  0:00:01  360k 73  559k   73  412k    0     0   303k      0  0:00:01  0:00:01 --:--:--  303k100  559k  100  559k    0     0   249k      0  0:00:02  0:00:02 --:--:--  249k
