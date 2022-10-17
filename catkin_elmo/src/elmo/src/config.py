@@ -37,13 +37,15 @@ class Node:
             "wifi/ssid",
             "wifi/password"
         ]:
-            v = rospy.get_param(k)
-            config[k] = v
+            if rospy.has_param(k):
+                v = rospy.get_param(k)
+                config[k] = v
         with open(self.config_file, "w") as fp:
             json.dump(config, fp, indent=2)
 
     def on_export(self, _):
         self.export()
+        return True, "OK"
 
 
 if __name__ == '__main__':

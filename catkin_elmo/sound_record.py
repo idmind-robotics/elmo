@@ -1,5 +1,5 @@
 #! /bin/bash
 
 
-arecord -D hw:0,0 -f cd mic.wav
+arecord -D hw:1,0 -f cd mic.wav
 
