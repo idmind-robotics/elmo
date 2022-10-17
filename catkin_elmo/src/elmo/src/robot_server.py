@@ -278,7 +278,8 @@ def command():
 def quick_connect():
     udp_ip = "0.0.0.0"
     udp_port = 5000
-    response = b"iamarobot;elmo;ELMO OG;8001"
+    response_str = "iamarobot;elmo;%s;8001" % rospy.get_param("robot_name")
+    response = response_str.encode()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((udp_ip, udp_port))
     while True:

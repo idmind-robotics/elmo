@@ -11,10 +11,15 @@ RATE = 60
 
 class Node:
     def __init__(self):
-        self.shutdown_pin = rospy.get_param("gpio/shutdown_pin")
+        while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
+            rospy.sleep(0.1)
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.shutdown_pin, GPIO.IN)
+
+    @property
+    def shutdown_pin(self):
+        return rospy.get_param("gpio/shutdown_pin")
     
     def run(self):
         rate = rospy.Rate(RATE)

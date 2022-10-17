@@ -244,7 +244,6 @@ class PanTilt:
             self.status = msg
         rospy.Subscriber("pan_tilt/status", PanTiltMsg, on_status)
         self.command_pub = rospy.Publisher("pan_tilt/command", PanTiltMsg, queue_size=1)
-        self.reload_params_srv = rospy.ServiceProxy("pan_tilt/reload_params", Trigger)
             
     def get_limits(self):
         return {
@@ -261,7 +260,6 @@ class PanTilt:
         rospy.set_param("pan_tilt/max_pan_angle", max_pan_angle)
         rospy.set_param("pan_tilt/min_tilt_angle", min_tilt_angle)
         rospy.set_param("pan_tilt/max_tilt_angle", max_tilt_angle)
-        self.reload_params_srv()
 
     def get_status(self):
         return {
@@ -346,17 +344,16 @@ class Behaviours:
     def is_behaviour_enabled(self, behaviour):
         return rospy.get_param("behaviour/" + behaviour + "/enabled")
 
+
 class Wifi:
     def __init__(self):
-        self.credentials_file = rospy.get_param("wifi/credentials")
+        self.export_srv = rospy.ServiceProxy("config/export", Trigger)
 
     def update_credentials(self, ssid, password):
         rospy.loginfo("updating wifi credentials")
-        with open(self.credentials_file, "w") as fp:
-            json.dump({
-                "ssid": ssid,
-                "password": password
-            }, fp)
+        rospy.set_param("wifi/ssid", ssid)
+        rospy.set_param("wifi/password", password)
+        self.export_srv()
         rospy.logwarn("wifi credentials updated")
 
 

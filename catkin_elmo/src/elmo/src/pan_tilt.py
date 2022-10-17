@@ -18,31 +18,15 @@ DEBUG = False
 
 class Node:
     def __init__(self):
+        while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
+            rospy.sleep(0.1)
         hx.connect("/dev/ttyS0", 115200)
         hx.clear_errors()
-        pan_id = rospy.get_param("pan_tilt/pan_id")
-        pan_pid_p = rospy.get_param("pan_tilt/pan_p")
-        pan_pid_d = rospy.get_param("pan_tilt/pan_d")
-        tilt_id = rospy.get_param("pan_tilt/tilt_id")
-        tilt_pid_p = rospy.get_param("pan_tilt/tilt_p")
-        tilt_pid_d = rospy.get_param("pan_tilt/tilt_d")
-        self.max_pan_angle = rospy.get_param("pan_tilt/max_pan_angle")
-        self.min_pan_angle = rospy.get_param("pan_tilt/min_pan_angle")
-        self.max_tilt_angle = rospy.get_param("pan_tilt/max_tilt_angle")
-        self.min_tilt_angle = rospy.get_param("pan_tilt/min_tilt_angle")
-        self.min_playtime = rospy.get_param("pan_tilt/min_playtime")
-        self.max_playtime = rospy.get_param("pan_tilt/max_playtime")
+        pan_id = rospy.get_param("/pan_tilt/pan_id")
+        tilt_id = rospy.get_param("/pan_tilt/tilt_id")
         self.pan = hx.servo(pan_id)
         self.tilt = hx.servo(tilt_id)
-        rospy.sleep(0.5)
-        self.pan.set_position_p(pan_pid_p)
-        rospy.sleep(0.5)
-        self.pan.set_position_d(pan_pid_d)
-        rospy.sleep(0.5)
-        self.tilt.set_position_p(tilt_pid_p)
-        rospy.sleep(0.5)
-        self.tilt.set_position_d(tilt_pid_d)
-        rospy.sleep(0.5)
+        self.calibrate_pid()
         self.status_pan_torque = False
         self.status_pan_angle = self.pan.get_servo_angle()
         self.status_pan_angle_ref = self.status_pan_angle
@@ -58,16 +42,62 @@ class Node:
         self.command_playtime = 0
         self.status_pub = rospy.Publisher("pan_tilt/status", PanTilt, queue_size=10)
         rospy.Subscriber("pan_tilt/command", PanTilt, self.on_command)
-        rospy.Service("pan_tilt/reload_params", Trigger, self.on_reload_params)
+        rospy.Service("pan_tilt/recalibrate_pid", Trigger, self.on_recalibrate_pid)
 
-        if DEBUG:
-            def set_pan(angle, playtime, _):
-                pass
-            def set_tilt(angle, playtime, _):
-                pass
-            self.pan.set_servo_angle = set_pan
-            self.tilt.set_servo_angle = set_tilt
+    @property
+    def pan_pid_p(self):
+        return rospy.get_param("pan_tilt/pan_p")
 
+    @property
+    def pan_pid_d(self):
+        return rospy.get_param("pan_tilt/pan_d")
+
+    @property
+    def max_pan_angle(self):
+        return rospy.get_param("pan_tilt/max_pan_angle")
+
+    @property
+    def min_pan_angle(self):
+        return rospy.get_param("pan_tilt/min_pan_angle")
+
+    @property
+    def tilt_pid_p(self):
+        return rospy.get_param("pan_tilt/tilt_p")
+
+    @property
+    def tilt_pid_d(self):
+        return rospy.get_param("pan_tilt/tilt_d")
+
+    @property
+    def max_tilt_angle(self):
+        return rospy.get_param("pan_tilt/max_tilt_angle")
+
+    @property
+    def min_tilt_angle(self):
+        return rospy.get_param("pan_tilt/min_tilt_angle")
+
+    @property
+    def min_playtime(self):
+        return rospy.get_param("pan_tilt/min_playtime")
+
+    @property
+    def max_playtime(self):
+        return rospy.get_param("pan_tilt/max_playtime")
+
+    def calibrate_pid(self):
+        rospy.sleep(0.5)
+        self.pan.set_position_p(self.pan_pid_p)
+        rospy.sleep(0.5)
+        self.pan.set_position_d(self.pan_pid_d)
+        rospy.sleep(0.5)
+        self.tilt.set_position_p(self.tilt_pid_p)
+        rospy.sleep(0.5)
+        self.tilt.set_position_d(self.tilt_pid_d)
+        rospy.sleep(0.5)
+
+    def on_recalibrate_pid(self, _):
+        self.calibrate_pid()
+        return True, "OK"
 
     def on_command(self, msg):
         # get requested parameters
@@ -76,48 +106,34 @@ class Node:
         self.command_pan_angle = msg.pan_angle
         self.command_tilt_angle = msg.tilt_angle
         self.command_playtime = msg.playtime * 100 if msg.playtime > 0 else 50
-        # ignore 0 values for angle
-        # if self.command_pan_angle == 0:
-        #     self.command_pan_angle = self.status_pan_angle_ref
-        # if self.command_tilt_angle == 0:
-        #     self.command_tilt_angle = self.status_tilt_angle_ref
         # limit range
         self.command_pan_angle = max(self.min_pan_angle, min(self.command_pan_angle, self.max_pan_angle))
         self.command_tilt_angle = max(self.min_tilt_angle, min(self.command_tilt_angle, self.max_tilt_angle))
         # calculate min playtime
-        if self.command_pan_angle != 0 or self.command_tilt_angle != 0:
-            motion_range_pan = math.fabs(self.command_pan_angle - self.status_pan_angle)
-            max_range_pan = self.max_pan_angle - self.min_pan_angle
-            motion_range_pan_normalized = linterpol(motion_range_pan, 0, max_range_pan, 0.0, 1.0)
-            motion_range_tilt = math.fabs(self.command_tilt_angle - self.status_tilt_angle)
-            max_range_tilt = self.max_tilt_angle - self.min_tilt_angle
-            motion_range_tilt_normalized = linterpol(motion_range_tilt, 0, max_range_tilt, 0.0, 1.0)
-            # use largest motion for min playtime calculation
-            if motion_range_pan_normalized > motion_range_tilt_normalized:
-                min_playtime = linterpol(motion_range_pan, 0, self.max_pan_angle - self.min_pan_angle, self.min_playtime, self.max_playtime)
-            else:
-                min_playtime = linterpol(motion_range_tilt, 0, self.max_tilt_angle - self.min_tilt_angle, self.min_playtime, self.max_playtime)
-            if self.command_playtime < min_playtime:
-                self.command_playtime = min_playtime
-            # limit upper playtime bound
-            if self.command_playtime > self.max_playtime:
-                self.command_playtime = self.max_playtime
-        print("playtime: %d" % self.command_playtime)
-
-    def on_reload_params(self, _):
-        self.max_pan_angle = rospy.get_param("pan_tilt/max_pan_angle")
-        self.min_pan_angle = rospy.get_param("pan_tilt/min_pan_angle")
-        self.max_tilt_angle = rospy.get_param("pan_tilt/max_tilt_angle")
-        self.min_tilt_angle = rospy.get_param("pan_tilt/min_tilt_angle")
-        self.min_playtime = rospy.get_param("pan_tilt/min_playtime")
-        self.max_playtime = rospy.get_param("pan_tilt/max_playtime")
-        return True, "OK"
+        motion_range_pan = math.fabs(self.command_pan_angle - self.status_pan_angle)
+        max_range_pan = self.max_pan_angle - self.min_pan_angle
+        motion_range_pan_normalized = linterpol(motion_range_pan, 0, max_range_pan, 0.0, 1.0)
+        motion_range_tilt = math.fabs(self.command_tilt_angle - self.status_tilt_angle)
+        max_range_tilt = self.max_tilt_angle - self.min_tilt_angle
+        motion_range_tilt_normalized = linterpol(motion_range_tilt, 0, max_range_tilt, 0.0, 1.0)
+        # use largest motion for min playtime calculation
+        if motion_range_pan_normalized > motion_range_tilt_normalized:
+            min_playtime = linterpol(motion_range_pan, 0, self.max_pan_angle - self.min_pan_angle, self.min_playtime, self.max_playtime)
+        else:
+            min_playtime = linterpol(motion_range_tilt, 0, self.max_tilt_angle - self.min_tilt_angle, self.min_playtime, self.max_playtime)
+        if self.command_playtime < min_playtime:
+            self.command_playtime = min_playtime
+        # limit upper playtime bound
+        if self.command_playtime > self.max_playtime:
+            self.command_playtime = self.max_playtime
+        rospy.loginfo("playtime: %d" % self.command_playtime)
 
     def run(self):
-        rate = rospy.Rate(LOOP_RATE)
+        rate = rospy.Rate(LOOP_RATE / 2.0)
         while not rospy.is_shutdown():
             try:
-                hx.clear_errors()
+                # rate.sleep()
+                # hx.clear_errors()
                 rate.sleep()
                 # update angle status
                 self.status_pan_angle = self.pan.get_servo_angle()
@@ -140,30 +156,26 @@ class Node:
                 if self.command_pan_torque != self.status_pan_torque:
                     if self.command_pan_torque:
                         self.pan.torque_on()
-                        rospy.logwarn("pan: ON")
                     else:
                         self.pan.torque_off()
-                        rospy.logwarn("pan: OFF")
                     self.status_pan_torque = self.command_pan_torque
                     continue
                 elif self.command_pan_angle != self.status_pan_angle_ref:
                     self.pan.set_servo_angle(self.command_pan_angle, int(self.command_playtime), 0)
-                    rospy.loginfo("pan: %.2f\t| %d", self.command_pan_angle, self.command_playtime)
+                    # self.pan.set_servo_angle(self.command_pan_angle, 100, 0)
                     self.status_pan_angle_ref = self.command_pan_angle
                     continue
                 # tilt
                 if self.command_tilt_torque != self.status_tilt_torque:
                     if self.command_tilt_torque:
                         self.tilt.torque_on()
-                        rospy.logwarn("tilt: ON")
                     else:
                         self.tilt.torque_off()
-                        rospy.logwarn("tilt: OFF")
                     self.status_tilt_torque = self.command_tilt_torque
                     continue
                 elif self.command_tilt_angle != self.status_tilt_angle_ref:
                     self.tilt.set_servo_angle(self.command_tilt_angle, int(self.command_playtime), 0)
-                    rospy.loginfo("tilt: %.2f\t| %d", self.command_tilt_angle, self.command_playtime)
+                    # self.tilt.set_servo_angle(self.command_tilt_angle, 100, 0)
                     self.status_tilt_angle_ref = self.command_tilt_angle
                     continue
             except Exception as e:

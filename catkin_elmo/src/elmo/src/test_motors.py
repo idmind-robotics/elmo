@@ -7,8 +7,8 @@ import robot as r
 from std_msgs.msg import String
 
 
-MIN_SLEEP = 1.0
-MAX_SLEEP = 3.0
+MIN_SLEEP = 2.0
+MAX_SLEEP = 4.0
 
 
 class Node:
@@ -45,10 +45,13 @@ class Node:
             rate.sleep()
             if self.enabled:
                 limits = self.pan_tilt_api.get_limits()
+                pan = random.uniform(limits["min_pan_angle"], limits["max_pan_angle"])
+                tilt = random.uniform(limits["min_tilt_angle"], limits["max_tilt_angle"])
                 self.pan_tilt_api.set_angles(
-                    pan=random.uniform(limits["min_pan_angle"], limits["max_pan_angle"]),
-                    tilt=random.uniform(limits["min_tilt_angle"], limits["max_tilt_angle"])
+                    pan=pan,
+                    tilt=tilt
                 )
+                rospy.loginfo("pan: %.2f | tilt: %.2f" % (pan, tilt) )
                 rospy.sleep(random.uniform(MIN_SLEEP, MAX_SLEEP))
 
 

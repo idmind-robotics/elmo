@@ -17,6 +17,8 @@ LOOP_RATE = 5
 class Node:
 
     def __init__(self):
+        self.prev_colors = [[0, 0, 0]] * 169
+        self.colors = [[0, 0, 0]] * 169
         self.pixels = neopixel.NeoPixel(board.D18, 169, brightness=0.4, auto_write=False)
         rospy.Subscriber("leds/colors", Colors, self.on_colors)
 
@@ -27,18 +29,22 @@ class Node:
             color_g = max(0, min(255, int(color.g)))
             color_b = max(0, min(255, int(color.b)))
             self.pixels[i] = (color_r, color_g, color_b)
+            self.colors[i] = (color_r, color_g, color_b)
 
     def run(self):
         rate = rospy.Rate(LOOP_RATE)
         while not rospy.is_shutdown():
             rate.sleep()
-            self.pixels.show()
+            if self.colors != self.prev_colors:
+                self.pixels.show()
+                for i in range(len(self.colors)):
+                    self.prev_colors[i]  = self.colors[i]
         self.pixels.fill((0, 0, 0))
         self.pixels.show()
 
 
 if __name__ == '__main__':
-  rospy.init_node("leds")
-  NODE = Node()
-  rospy.loginfo(rospy.get_name() + ": running")
-  NODE.run()
+    rospy.init_node("leds")
+    NODE = Node()
+    rospy.loginfo(rospy.get_name() + ": running")
+    NODE.run()

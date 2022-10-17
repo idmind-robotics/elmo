@@ -1,7 +1,1 @@
-Error: 'Elmo' is not an active connection.
-Error: no active connection provided.
- * Serving Flask app "robot_server" (lazy loading)
- * Environment: production
-   WARNING: Do not use the development server in a production environment.
-   Use a production WSGI server instead.
- * Debug mode: off
+INFO: cannot create a symlink to latest log directory: [Errno 2] No such file or directory: '/root/.ros/log/latest'

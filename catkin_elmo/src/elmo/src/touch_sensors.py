@@ -16,23 +16,31 @@ LOOP_RATE = 10
 
 class Node:
     def __init__(self):
+        while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
+            rospy.sleep(0.1)
         i2c = busio.I2C(board.SCL, board.SDA)
         self.mpr121 = adafruit_mpr121.MPR121(i2c)
         self.pub = rospy.Publisher('touch', TouchEvent, queue_size=10)
         self.pub_raw = rospy.Publisher('touch/raw', UInt32MultiArray, queue_size=10)
 
+    @property
+    def head_threshold(self):
+        return rospy.get_param("touch/head_threshold")
+
+    @property
+    def chest_threshold(self):
+        return rospy.get_param("touch/chest_threshold")
+
     def run(self):
         rate = rospy.Rate(LOOP_RATE)
         while not rospy.is_shutdown():
             rate.sleep()
-            head_thresh = rospy.get_param("touch/head_threshold", 115)
-            chest_thresh = rospy.get_param("touch/chest_threshold", 145)
             msg = TouchEvent()
-            msg.sensor[0] = bool(self.mpr121.filtered_data(0) < chest_thresh)
-            msg.sensor[1] = bool(self.mpr121.filtered_data(1) < head_thresh)
-            msg.sensor[2] = bool(self.mpr121.filtered_data(2) < head_thresh)
-            msg.sensor[3] = bool(self.mpr121.filtered_data(3) < head_thresh)
-            msg.sensor[4] = bool(self.mpr121.filtered_data(4) < head_thresh)
+            msg.sensor[0] = bool(self.mpr121.filtered_data(0) < self.chest_threshold)
+            msg.sensor[1] = bool(self.mpr121.filtered_data(1) < self.head_threshold)
+            msg.sensor[2] = bool(self.mpr121.filtered_data(2) < self.head_threshold)
+            msg.sensor[3] = bool(self.mpr121.filtered_data(3) < self.head_threshold)
+            msg.sensor[4] = bool(self.mpr121.filtered_data(4) < self.head_threshold)
             for i in range(5):
                 if msg.sensor[i]:
                     print("TOUCH " + str(i))
