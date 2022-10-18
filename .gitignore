@@ -4,3 +4,5 @@ devel/
 devel_isolated/
 .vscode/
 app
+latest.log
+latest_nosudo.log
