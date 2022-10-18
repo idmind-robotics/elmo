@@ -27,13 +27,13 @@
             shutdown_pin: 17
     </rosparam>
     <node pkg="elmo" type="config.py"           name="config" />
-    <node pkg="elmo" output="screen" type="pan_tilt.py"         name="pan_tilt" />
+    <node pkg="elmo" type="pan_tilt.py"         name="pan_tilt" />
     <node pkg="elmo" type="gpio.py"             name="gpio" />
     <node pkg="elmo" type="leds.py"             name="leds" />
     <node pkg="elmo" type="touch_sensors.py"    name="touch_sensors" />
     <node pkg="elmo" type="http_server.py"      name="http_server" />
     <node pkg="elmo" type="robot_server.py"     name="robot_server" />
-    <node pkg="elmo" output="screen" type="wifi.py"             name="wifi" />
+    <node pkg="elmo" type="wifi.py"             name="wifi" />
     <!-- test nodes -->
     <node pkg="elmo" type="test_motors.py"      name="test_pan_tilt" />
     <node pkg="elmo" type="test_leds.py"        name="test_leds" />

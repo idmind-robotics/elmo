@@ -6,3 +6,4 @@ devel_isolated/
 app
 latest.log
 latest_nosudo.log
+__pycache__/

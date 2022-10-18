@@ -13,25 +13,24 @@ class Node:
     def __init__(self):
         while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
             rospy.sleep(0.1)
-        if not self.check_ip():
-            self.close_hotspot()
-            time.sleep(2.0)
-            if rospy.has_param("wifi"):
-                creds = rospy.get_param("wifi")
-                connected_to_wifi = self.connect(creds["ssid"], creds["password"])
+        self.close_hotspot()
+        time.sleep(2.0)
+        if rospy.has_param("wifi"):
+            creds = rospy.get_param("wifi")
+            connected_to_wifi = self.connect(creds["ssid"], creds["password"])
+            time.sleep(1.0)
+            if not connected_to_wifi and self.check_ip():
                 time.sleep(1.0)
-                if not connected_to_wifi and self.check_ip():
-                    time.sleep(1.0)
-                    self.open_hotspot()
-            else:
                 self.open_hotspot()
         else:
-            rospy.loginfo("already connected")
+            self.open_hotspot()
 
     def connect(self, ssid, password):
         try:
-            command = "nmcli dev wifi connect %s password \"%s\"" % (ssid, password)
-            out = subprocess.check_output(command.split(" ")).decode()
+            command = "nmcli dev wifi connect %s password %s" % (ssid, password)
+            rospy.loginfo(command)
+            out = subprocess.check_output(command.split(" "))
+            rospy.loginfo(out)
             return "successfully activated" in out
         except:
             return False
@@ -39,6 +38,7 @@ class Node:
     def check_ip(self):
         try:
             ip = netifaces.ifaddresses("wlan0")[netifaces.AF_INET][0]["addr"]
+            rospy.loginfo("checking ip: %s" % ip)
             return ip != ""
         except Exception:
             return False
