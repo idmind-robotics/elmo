@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>792</width>
-    <height>764</height>
+    <height>766</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1362,6 +1362,18 @@ Limits</string>
        <string>Touch Sensors</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="label_22">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Head Threshold</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_16">
          <property name="font">
@@ -1407,7 +1419,7 @@ Limits</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
+       <item row="0" column="5">
         <widget class="QCheckBox" name="touch_head_n">
          <property name="enabled">
           <bool>false</bool>
@@ -1422,7 +1434,7 @@ Limits</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="5" colspan="2">
+       <item row="0" column="6" colspan="2">
         <widget class="QLabel" name="label_17">
          <property name="font">
           <font>
@@ -1434,7 +1446,7 @@ Limits</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="7">
+       <item row="0" column="8">
         <widget class="QCheckBox" name="touch_head_e">
          <property name="enabled">
           <bool>false</bool>
@@ -1488,7 +1500,7 @@ Limits</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
+       <item row="1" column="5">
         <widget class="QCheckBox" name="touch_head_w">
          <property name="enabled">
           <bool>false</bool>
@@ -1500,42 +1512,6 @@ Limits</string>
          </property>
          <property name="text">
           <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="label_22">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Head Threshold</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLabel" name="touch_head_threshold">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4" rowspan="2" colspan="2">
-        <widget class="QSpinBox" name="touch_set_head_threshold">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
          </property>
         </widget>
        </item>
@@ -1551,18 +1527,6 @@ Limits</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="4" colspan="2">
-        <widget class="QSpinBox" name="touch_set_chest_threshold">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="3">
         <widget class="QLabel" name="touch_chest_threshold">
          <property name="font">
@@ -1575,7 +1539,7 @@ Limits</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="6" rowspan="3" colspan="2">
+       <item row="2" column="7" rowspan="3" colspan="2">
         <widget class="QPushButton" name="touch_update_threshold">
          <property name="font">
           <font>
@@ -1585,6 +1549,42 @@ Limits</string>
          <property name="text">
           <string>Update
 Thresholds</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="touch_head_threshold">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4" colspan="3">
+        <widget class="QSpinBox" name="touch_set_chest_threshold">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4" colspan="3">
+        <widget class="QSpinBox" name="touch_set_head_threshold">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
          </property>
         </widget>
        </item>

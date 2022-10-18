@@ -14,7 +14,6 @@ from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
 import os
 import threading
-import time
 
 
 class Leds:
@@ -323,7 +322,6 @@ class Power:
         if not self.will_shutdown:
             self.will_shutdown = True
             def do_shutdown():
-                time.sleep(1.0)
                 os.system("/usr/sbin/shutdown -h now")
             shutdown_thread = threading.Thread(target=do_shutdown)
             shutdown_thread.start()

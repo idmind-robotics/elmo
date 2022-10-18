@@ -75,7 +75,7 @@ class Robot:
     def update_status(self):
         try:
             url = self.address + "/status"
-            new_status = requests.get(url).json()
+            new_status = requests.get(url, timeout=1).json()
             for k in new_status:
                 setattr(self, k, new_status[k])
             self.error_count = 0
@@ -90,7 +90,7 @@ class Robot:
         try:
             url = self.address + "/command"
             kwargs["op"] = command
-            res = requests.post(url, json=kwargs).json()
+            res = requests.post(url, json=kwargs, timeout=1).json()
             if not res["success"]:
                 self.on_error(res["message"])
         except Exception as e:
