@@ -35,7 +35,10 @@ class Node:
             "pan_tilt/max_tilt_angle",
             "pan_tilt/max_tilt_angle",
             "wifi/ssid",
-            "wifi/password"
+            "wifi/password",
+            "startup/image",
+            "startup/icon",
+            "startup/behaviours"
         ]:
             if rospy.has_param(k):
                 v = rospy.get_param(k)

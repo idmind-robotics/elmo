@@ -19,7 +19,7 @@ class Node:
     def __init__(self):
         self.prev_colors = [[0, 0, 0]] * 169
         self.colors = [[0, 0, 0]] * 169
-        self.pixels = neopixel.NeoPixel(board.D18, 169, brightness=0.4, auto_write=False)
+        self.pixels = neopixel.NeoPixel(board.D18, 169, brightness=0.3, auto_write=False)
         rospy.Subscriber("leds/colors", Colors, self.on_colors)
 
     def on_colors(self, msg):

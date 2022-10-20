@@ -189,6 +189,7 @@ class Touch:
     HEAD_W = 3 # 1
     HEAD_S = 1 # 4
     HEAD_E = 2 # 3
+    TOUCH_BUFFER_SIZE = 4
 
     def __init__(self):
         self.touch_status = [
@@ -205,6 +206,13 @@ class Touch:
             [],
             [],
         ]
+        self.touch_buffers = {
+            "chest": 0,
+            "head_n": 0,
+            "head_w": 0,
+            "head_s": 0,
+            "head_e": 0,
+        }
         rospy.Subscriber("touch", TouchEvent, self.__on_touch_event)
 
     def __on_touch_event(self, msg):
@@ -213,6 +221,31 @@ class Touch:
                 for cb in self.callbacks[i]:
                     cb()
             self.touch_status[i] = msg.sensor[i]
+        if msg.sensor[Touch.CHEST]:
+            if self.touch_buffers["chest"] < Touch.TOUCH_BUFFER_SIZE:
+                self.touch_buffers["chest"] += 1
+        else:
+            self.touch_buffers["chest"] = 0
+        if msg.sensor[Touch.HEAD_N]:
+            if self.touch_buffers["head_n"] < Touch.TOUCH_BUFFER_SIZE:
+                self.touch_buffers["head_n"] += 1
+        else:
+            self.touch_buffers["head_n"] = 0
+        if msg.sensor[Touch.HEAD_W]:
+            if self.touch_buffers["head_w"] < Touch.TOUCH_BUFFER_SIZE:
+                self.touch_buffers["head_w"] += 1
+        else:
+            self.touch_buffers["head_w"] = 0
+        if msg.sensor[Touch.HEAD_S]:
+            if self.touch_buffers["head_s"] < Touch.TOUCH_BUFFER_SIZE:
+                self.touch_buffers["head_s"] += 1
+        else:
+            self.touch_buffers["head_s"] = 0
+        if msg.sensor[Touch.HEAD_E]:
+            if self.touch_buffers["head_e"] < Touch.TOUCH_BUFFER_SIZE:
+                self.touch_buffers["head_e"] += 1
+        else:
+            self.touch_buffers["head_e"] = 0
 
     def on_touch(self, idx, cb):
         self.callbacks[idx].append(cb)
@@ -235,6 +268,19 @@ class Touch:
     
     def set_touch_chest_threshold(self, threshold):
         rospy.set_param("touch/chest_threshold", threshold)
+
+    def head_touch_detected(self):
+        return any((
+            self.touch_buffers["head_n"] == Touch.TOUCH_BUFFER_SIZE,
+            self.touch_buffers["head_w"] == Touch.TOUCH_BUFFER_SIZE,
+            self.touch_buffers["head_s"] == Touch.TOUCH_BUFFER_SIZE,
+            self.touch_buffers["head_e"] == Touch.TOUCH_BUFFER_SIZE
+        ))
+
+    def chest_touch_detected(self):
+        return self.touch_buffers["chest"] == Touch.TOUCH_BUFFER_SIZE
+
+
 
 
 class PanTilt:

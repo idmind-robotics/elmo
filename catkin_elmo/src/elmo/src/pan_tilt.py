@@ -105,7 +105,7 @@ class Node:
         self.command_tilt_torque = msg.tilt_torque
         self.command_pan_angle = msg.pan_angle
         self.command_tilt_angle = msg.tilt_angle
-        self.command_playtime = msg.playtime * 100 if msg.playtime > 0 else 50
+        self.command_playtime = msg.playtime * 100 if msg.playtime > 0 else self.min_playtime
         # limit range
         self.command_pan_angle = max(self.min_pan_angle, min(self.command_pan_angle, self.max_pan_angle))
         self.command_tilt_angle = max(self.min_tilt_angle, min(self.command_tilt_angle, self.max_tilt_angle))
@@ -126,7 +126,6 @@ class Node:
         # limit upper playtime bound
         if self.command_playtime > self.max_playtime:
             self.command_playtime = self.max_playtime
-        rospy.loginfo("playtime: %d" % self.command_playtime)
 
     def run(self):
         rate = rospy.Rate(LOOP_RATE / 2.0)
@@ -162,6 +161,7 @@ class Node:
                     continue
                 elif self.command_pan_angle != self.status_pan_angle_ref:
                     self.pan.set_servo_angle(self.command_pan_angle, int(self.command_playtime), 0)
+                    print("pan: %.2f %d" % (self.command_pan_angle, self.command_playtime))
                     # self.pan.set_servo_angle(self.command_pan_angle, 100, 0)
                     self.status_pan_angle_ref = self.command_pan_angle
                     continue
@@ -175,6 +175,7 @@ class Node:
                     continue
                 elif self.command_tilt_angle != self.status_tilt_angle_ref:
                     self.tilt.set_servo_angle(self.command_tilt_angle, int(self.command_playtime), 0)
+                    print("tilt: %.2f %d" % (self.command_tilt_angle, self.command_playtime))
                     # self.tilt.set_servo_angle(self.command_tilt_angle, 100, 0)
                     self.status_tilt_angle_ref = self.command_tilt_angle
                     continue

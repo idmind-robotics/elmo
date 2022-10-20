@@ -34,6 +34,8 @@
     <node pkg="elmo" type="http_server.py"      name="http_server" />
     <node pkg="elmo" type="robot_server.py"     name="robot_server" />
     <node pkg="elmo" type="wifi.py"             name="wifi" />
+    <node pkg="elmo" type="blush.py"            name="blush" />
+    <node pkg="elmo" type="startup.py"          name="startup" />
     <!-- test nodes -->
     <node pkg="elmo" type="test_motors.py"      name="test_pan_tilt" />
     <node pkg="elmo" type="test_leds.py"        name="test_leds" />
