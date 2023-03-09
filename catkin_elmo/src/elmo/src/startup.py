@@ -18,12 +18,12 @@ class Node:
 
     def run(self):
         rospy.sleep(TIMEOUT)
-        image = rospy.get_param("startup/image", "")
+        image = rospy.get_param("startup/image", "normal.png")
         if image:
-            self.onboard_api.set_image(self.server_api.url_for_image("normal.png"))
-        icon = rospy.get_param("startup/icon", "")
+            self.onboard_api.set_image(self.server_api.url_for_image(image))
+        icon = rospy.get_param("startup/icon", "elmo_idm.png")
         if icon:
-            self.leds_api.load_from_url(self.server_api.url_for_icon("elmo_idm.png"))
+            self.leds_api.load_from_url(self.server_api.url_for_icon(icon))
         behaviours = rospy.get_param("startup/behaviours", [])
         for b in behaviours:
             self.behaviours_api.enable_behaviour(b)

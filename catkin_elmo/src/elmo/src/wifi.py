@@ -14,12 +14,14 @@ class Node:
         while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
             rospy.sleep(0.1)
         self.close_hotspot()
-        time.sleep(2.0)
+        time.sleep(5.0)
         if rospy.has_param("wifi"):
             creds = rospy.get_param("wifi")
             connected_to_wifi = self.connect(creds["ssid"], creds["password"])
             time.sleep(1.0)
-            if not connected_to_wifi and self.check_ip():
+            if connected_to_wifi:
+                print("connected to %s" % creds["ssid"])
+            elif not self.check_ip():
                 time.sleep(1.0)
                 self.open_hotspot()
         else:

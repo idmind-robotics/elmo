@@ -20,7 +20,7 @@ class Node:
             rospy.sleep(0.1)
         i2c = busio.I2C(board.SCL, board.SDA)
         self.mpr121 = adafruit_mpr121.MPR121(i2c)
-        self.pub = rospy.Publisher('touch', TouchEvent, queue_size=10)
+        self.pub = rospy.Publisher('touch_old', TouchEvent, queue_size=10)
         self.pub_raw = rospy.Publisher('touch/raw', UInt32MultiArray, queue_size=10)
 
     @property
