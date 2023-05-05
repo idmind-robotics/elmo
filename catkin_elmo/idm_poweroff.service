@@ -1,0 +1,13 @@
+[Unit]
+Description=GPIO Shutdown Script
+
+[Service]
+ExecStart=/bin/true
+ExecStop=/home/idmind/elmo/catkin_elmo/idm_poweroff.sh
+RemainAfterExit=true
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+

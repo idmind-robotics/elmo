@@ -199,3 +199,9 @@ When developing modules for Elmo, it may be correct to use the ROS API. In order
 The camera driver is not handled by the ROS usb_cam package, as is common. Instead, the program motion was installed, which exposes the camera feed via http.
 
 The default network manager for Pi OS Buster is not used, instead nmcli is running the show. The script catkin_elmo/src/elmo/configure_hotspot.sh shows how to configure it.
+
+After shutting down, the raspberry needs to use a GPIO pin to disable the power on the robot.
+
+This is achieved by copying the idm_poweroff.service file to /etc/systemd/system/ and enabling the service:
+
+  $ sudo systemctl enable idm_poweroff.service

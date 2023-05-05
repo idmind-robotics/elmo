@@ -1,6 +1,6 @@
 <launch>
     <rosparam subst_value="true">
-        robot_name: "Elmo 03"
+        robot_name: "Elmo 04"
         config_file: /home/idmind/elmo.json
         touch:
             head_threshold: 102
@@ -35,6 +35,7 @@
     <node pkg="elmo" type="http_server.py"      name="http_server" />
     <node pkg="elmo" type="robot_server.py"     name="robot_server" />
     <node pkg="elmo" type="wifi.py"             name="wifi" output="screen" />
+    <node pkg="elmo" type="speakers.py"         name="speakers" output="screen" />
     <node pkg="elmo" type="blush.py"            name="blush" />
     <node pkg="elmo" type="startup.py"          name="startup" />
     <!-- test nodes -->

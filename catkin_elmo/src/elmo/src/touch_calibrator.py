@@ -12,15 +12,16 @@ def calculate_bollinger_bands(numbers, window_size, num_std):
     # Calculate rolling mean and standard deviation
     rolling_mean = np.convolve(numbers, np.ones(window_size)/window_size, mode='valid')
     rolling_std = np.sqrt(np.convolve(np.square(numbers - rolling_mean), np.ones(window_size)/window_size, mode='valid'))
-    
+
     # Calculate upper and lower bands
     upper_band = rolling_mean + num_std * rolling_std
     lower_band = rolling_mean - num_std * rolling_std
-    
+
     return upper_band, rolling_mean, lower_band
 
 
 WINDOW_SIZE = 50
+STD_DEV = 4.5
 
 
 class Node:
@@ -36,7 +37,7 @@ class Node:
             rospy.sleep(1.0)
         print("calculating limits")
         for window in self.windows:
-            upper_band, rolling_mean, lower_band = calculate_bollinger_bands(window, len(window), 2.5)
+            upper_band, rolling_mean, lower_band = calculate_bollinger_bands(window, len(window), STD_DEV)
             self.limits.append({
                 "upper": upper_band,
                 "lower": lower_band

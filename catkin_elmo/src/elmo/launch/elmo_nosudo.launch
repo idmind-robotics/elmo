@@ -2,6 +2,6 @@
     <rosparam subst_value="true">
 
     </rosparam>
-    <node pkg="elmo" output="screen" type="speakers.py" name="speakers" />
+    <!--node pkg="elmo" output="screen" type="speakers.py" name="speakers" /-->
 
 </launch>
