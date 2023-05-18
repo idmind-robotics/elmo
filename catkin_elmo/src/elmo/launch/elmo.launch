@@ -1,6 +1,6 @@
 <launch>
     <rosparam subst_value="true">
-        robot_name: "Elmo 04"
+        robot_name: "Elmo 05"
         config_file: /home/idmind/elmo.json
         touch:
             head_threshold: 102

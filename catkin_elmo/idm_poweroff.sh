@@ -28,6 +28,7 @@ setPinState()
 
 turnOff()
 {
+  echo 'turning off'
   setPinState $SHUTDOWN $OFF
 }
 

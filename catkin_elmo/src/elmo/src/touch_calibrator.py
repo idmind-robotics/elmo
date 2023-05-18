@@ -20,8 +20,8 @@ def calculate_bollinger_bands(numbers, window_size, num_std):
     return upper_band, rolling_mean, lower_band
 
 
-WINDOW_SIZE = 50
-STD_DEV = 4.5
+WINDOW_SIZE = 100
+STD_DEV = 5.0
 
 
 class Node:
