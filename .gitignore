@@ -4,6 +4,7 @@ devel/
 devel_isolated/
 .vscode/
 app
+elmo.img
 latest.log
 latest_nosudo.log
 __pycache__/
