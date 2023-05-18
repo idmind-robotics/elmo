@@ -524,6 +524,22 @@ class servo:
         data.append(0x01)
         data.append(colorcode)
         send_data(data)
+        
+    def set_max_acceleration_time(self, time):
+        """ Set the max acceleration time of Herkulex
+
+        Args:
+            time (int): The time in ms
+        """
+        data = []
+        data.append(0x0A)
+        data.append(self.servoid)
+        data.append(RAM_WRITE_REQ)
+        data.append(MAX_ACCELERATION_TIME_RAM)
+        data.append(0x01)
+        data.append(time)
+        send_data(data)
+
 
     def brake_on(self):
         """ Set the Brakes of Herkulex

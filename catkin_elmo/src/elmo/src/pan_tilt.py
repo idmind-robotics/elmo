@@ -20,12 +20,15 @@ class Node:
     def __init__(self):
         while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
             rospy.sleep(0.1)
+        rospy.loginfo(rospy.get_name() + ": Connecting to herkulex buffer...")
         hx.connect("/dev/ttyS0", 115200)
         hx.clear_errors()
         pan_id = rospy.get_param("/pan_tilt/pan_id")
         tilt_id = rospy.get_param("/pan_tilt/tilt_id")
+        rospy.loginfo(rospy.get_name() + ": Connecting to servos...")
         self.pan = hx.servo(pan_id)
         self.tilt = hx.servo(tilt_id)
+        rospy.loginfo(rospy.get_name() + ": Calibrating servos...")
         self.calibrate_pid()
         self.status_pan_torque = False
         self.status_pan_angle = self.pan.get_servo_angle()
@@ -42,6 +45,7 @@ class Node:
         self.command_playtime = 0
         self.status_pub = rospy.Publisher("pan_tilt/status", PanTilt, queue_size=10)
         rospy.Subscriber("pan_tilt/command", PanTilt, self.on_command)
+        rospy.Subscriber("pan_tilt/command_raw", PanTilt, self.on_command_raw)
         rospy.Service("pan_tilt/recalibrate_pid", Trigger, self.on_recalibrate_pid)
 
     @property
@@ -99,6 +103,17 @@ class Node:
         self.calibrate_pid()
         return True, "OK"
 
+    def on_command_raw(self, msg):
+        # get requested parameters
+        self.command_pan_torque = msg.pan_torque
+        self.command_tilt_torque = msg.tilt_torque
+        self.command_pan_angle = msg.pan_angle
+        self.command_tilt_angle = msg.tilt_angle
+        self.command_playtime = msg.playtime
+        # limit range
+        self.command_pan_angle = max(self.min_pan_angle, min(self.command_pan_angle, self.max_pan_angle))
+        self.command_tilt_angle = max(self.min_tilt_angle, min(self.command_tilt_angle, self.max_tilt_angle))
+
     def on_command(self, msg):
         # get requested parameters
         self.command_pan_torque = msg.pan_torque
@@ -128,7 +143,7 @@ class Node:
             self.command_playtime = self.max_playtime
 
     def run(self):
-        rate = rospy.Rate(LOOP_RATE / 2.0)
+        rate = rospy.Rate(LOOP_RATE)
         while not rospy.is_shutdown():
             try:
                 # rate.sleep()
@@ -158,13 +173,14 @@ class Node:
                     else:
                         self.pan.torque_off()
                     self.status_pan_torque = self.command_pan_torque
-                    continue
+                    # continue
                 elif self.command_pan_angle != self.status_pan_angle_ref:
                     self.pan.set_servo_angle(self.command_pan_angle, int(self.command_playtime), 0)
                     print("pan: %.2f %d" % (self.command_pan_angle, self.command_playtime))
                     # self.pan.set_servo_angle(self.command_pan_angle, 100, 0)
                     self.status_pan_angle_ref = self.command_pan_angle
-                    continue
+                    # continue
+                rospy.sleep(1.0 / LOOP_RATE / 2.0)  # wait for pan to finish
                 # tilt
                 if self.command_tilt_torque != self.status_tilt_torque:
                     if self.command_tilt_torque:
@@ -172,13 +188,13 @@ class Node:
                     else:
                         self.tilt.torque_off()
                     self.status_tilt_torque = self.command_tilt_torque
-                    continue
+                    # continue
                 elif self.command_tilt_angle != self.status_tilt_angle_ref:
                     self.tilt.set_servo_angle(self.command_tilt_angle, int(self.command_playtime), 0)
                     print("tilt: %.2f %d" % (self.command_tilt_angle, self.command_playtime))
                     # self.tilt.set_servo_angle(self.command_tilt_angle, 100, 0)
                     self.status_tilt_angle_ref = self.command_tilt_angle
-                    continue
+                    # continue
             except Exception as e:
                 rospy.logerr(rospy.get_name() + str(e))
 
