@@ -98,46 +98,48 @@ class Server:
 
     def __init__(self):
         self.port = rospy.get_param("http_server/port")
+        self.computer_name = "localhost" # "elmo"
         self.image_address = "/images"
         self.icon_address = "/icons"
-        self.speech_address = "/speech"
         self.sound_address = "/sounds"
+        self.video_address = "/videos"
+        self.video_clip_address = "/video_clips"
 
     def get_icon_list(self):
-        url = "http://elmo:" + str(self.port) + self.icon_address
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.icon_address
         icon_list = requests.get(url).json()
         return icon_list
 
     def url_for_icon(self, icon_name):
-        url = "http://elmo:" + str(self.port) + self.icon_address
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.icon_address
         return url + "/" + icon_name
 
     def get_image_list(self):
-        url = "http://elmo:" + str(self.port) + self.image_address
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.image_address
         image_list = requests.get(url).json()
         return image_list
 
     def url_for_image(self, image_name):
-        url = "http://elmo:" + str(self.port) + self.image_address
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.image_address
         return url + "/" + image_name
 
     def get_sound_list(self):
-        url = "http://elmo:" + str(self.port) + self.sound_address
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.sound_address
         sound_list = requests.get(url).json()
         return sound_list
 
     def url_for_sound(self, sound_name):
-        url = "http://elmo:" + str(self.port) + self.sound_address
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.sound_address
         return url + "/" + sound_name
 
-    def get_speech_list(self):
-        url = "http://elmo:" + str(self.port) + self.speech_address
-        speech_list = requests.get(url).json()
-        return speech_list
+    def get_video_list(self):
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.video_address
+        video_list = requests.get(url).json()
+        return video_list
 
-    def url_for_speech(self, speech_name):
-        url = "http://elmo:" + str(self.port) + self.speech_address
-        return url + "/" + speech_name
+    def url_for_video(self, video_name):
+        url = "http://" + self.computer_name + ":" + str(self.port) + self.video_address
+        return url + "/" + video_name
 
 
 class Onboard:
@@ -158,7 +160,9 @@ class Onboard:
     def set_image(self, image_name):
         command = {
             "image": image_name,
-            "text": None
+            "text": None,
+            "video": None,
+            "url": None
         }
         command_description = json.dumps(command)
         self.command_pub.publish(command_description)
@@ -166,7 +170,9 @@ class Onboard:
     def set_text(self, text):
         command = {
             "image": None,
-            "text": text
+            "text": text,
+            "video": None,
+            "url": None
         }
         command_description = json.dumps(command)
         self.command_pub.publish(command_description)
@@ -174,7 +180,33 @@ class Onboard:
     def set_camera_feed(self):
         command = {
             "image": "http://elmo:8081/",
-            "text": None
+            "text": None,
+            "video": None,
+            "url": None
+        }
+        command_description = json.dumps(command)
+        self.command_pub.publish(command_description)
+
+    def play_video(self, video, start_time=0.0, end_time=0.0):
+        command = {
+            "image": None,
+            "text": None,
+            "video": {
+                "name": video_name,
+                "start_time": start_time,
+                "end_time": end_time
+            },
+            "url": None
+        }
+        command_description = json.dumps(command)
+        self.command_pub.publish(command_description)
+
+    def set_url(self, url):
+        command = {
+            "image": None,
+            "text": None,
+            "video": None,
+            "url": url
         }
         command_description = json.dumps(command)
         self.command_pub.publish(command_description)

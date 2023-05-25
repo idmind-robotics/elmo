@@ -163,12 +163,17 @@ class Robot:
         self.leds_api.load_from_url(url)
         return True, "OK"
 
-    def set_screen(self, image=None, text=None, url=None, camera=False):
+    def set_screen(self, image=None, video=None, text=None, url=None, camera=False):
         if image is not "":
             url = self.server_api.url_for_image(image)
             self.onboard_api.set_image(url)
+        elif video is not "":
+            url = self.server_api.url_for_video(video)
+            self.onboard_api.set_video(url)
         elif text is not "":
             self.onboard_api.set_text(text)
+        elif url is not "":
+            self.onboard_api.set_url(url)
         elif camera:
             self.onboard_api.set_camera_feed()
         else:
@@ -252,10 +257,11 @@ def command():
             success, message = robot.set_volume(volume)
         elif op == "set_screen":
             image = req["image"]
+            video = req["video"]
             text = req["text"]
             url = req["url"]
             camera = req["camera"]
-            success, message = robot.set_screen(image, text, url, camera)
+            success, message = robot.set_screen(image, video, text, url, camera)
         elif op == "update_leds":
             colors = req["colors"]
             success, message = robot.update_leds(colors)

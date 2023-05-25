@@ -43,3 +43,31 @@ body {
     text-align: center;
 }
 
+#video-bg {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    object-fit: cover;
+    z-index: -1;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#video {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    object-fit: cover;
+    z-index: -1;
+    margin-left: auto;
+    margin-right: auto;
+}
+

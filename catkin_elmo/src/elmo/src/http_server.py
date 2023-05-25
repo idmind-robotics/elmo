@@ -25,6 +25,9 @@ CORS(app)
 ONBOARD_COMMAND = {
     "text": "",
     "image": "http://elmo:8000/images/sunglasses.png",
+    "video": "",
+    "url": "",
+
 }
 
 
@@ -40,7 +43,12 @@ def index():
 
 @app.route("/api/onboard/command")
 def onboard_command():
-    return jsonify(ONBOARD_COMMAND)
+    res = jsonify(ONBOARD_COMMAND)
+    ONBOARD_COMMAND["text"] = ""
+    ONBOARD_COMMAND["image"] = ""
+    ONBOARD_COMMAND["video"] = ""
+    ONBOARD_COMMAND["url"] = ""
+    return res
 
 
 @app.route("/api/onboard/state", methods=["POST"])
@@ -120,26 +128,50 @@ def delete_sound(name):
         return jsonify("OK")
 
 
-@app.route("/speech", methods=["GET", "POST"])
-def speech():
-    if request.method == "GET":
-        speech_list = os.listdir(rospy.get_param("http_server/static") + "/speech")
-        return jsonify(speech_list)
+@app.route("/videos", methods=["GET", "POST"])
+def videos():
+    if request.method == "GET":        
+        videos_list = os.listdir(rospy.get_param("http_server/static") + "/videos")
+        return jsonify(videos_list)
     elif request.method == "POST":
         file = request.files['file']
         filename = secure_filename(file.filename)
-        path = rospy.get_param("http_server/static") + "/speech/"
+        path = rospy.get_param("http_server/static") + "/videos/"
         file.save(path + filename)
         return jsonify("OK")
 
 
-@app.route("/speech/<name>", methods=["DELETE"])
-def delete_speech(name):
+@app.route("/videos/<name>", methods=["DELETE"])
+def delete_video(name):
     if request.method == "DELETE":
-        full_name = rospy.get_param("http_server/static") + "/speech/" + name
+        full_name = rospy.get_param("http_server/static") + "/videos/" + name
         print("deleting " + full_name)
         os.remove(full_name)
         return jsonify("OK")
+
+
+@app.route("/video_clips", methods=["GET", "POST"])
+def video_clips():
+    if request.method == "GET":        
+        video_clips_list = os.listdir(rospy.get_param("http_server/static") + "/video_clips")
+        return jsonify(video_clips_list)
+    elif request.method == "POST":
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        path = rospy.get_param("http_server/static") + "/video_clips/"
+        file.save(path + filename)
+        return jsonify("OK")
+
+
+@app.route("/video_clips/<name>", methods=["DELETE"])
+def delete_video_clip(name):
+    if request.method == "DELETE":
+        full_name = rospy.get_param("http_server/static") + "/video_clips/" + name
+        print("deleting " + full_name)
+        os.remove(full_name)
+        return jsonify("OK")
+
+
 
 
 if __name__ == "__main__":
