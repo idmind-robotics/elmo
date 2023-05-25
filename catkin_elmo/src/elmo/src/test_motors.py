@@ -15,7 +15,7 @@ class Node:
 
     def __init__(self):
         self.pan_tilt_api = r.PanTilt()
-        self.enabled = False
+        self.enabled = True
         rospy.set_param("behaviour/test_motors/enabled", self.enabled)
         rospy.Subscriber("behaviour/enable", String, self.on_enable)
         rospy.Subscriber("behaviour/disable", String, self.on_disable)
