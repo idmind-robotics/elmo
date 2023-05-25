@@ -1,9 +1,9 @@
+app/app
 build/
 build_isolated/
 devel/
 devel_isolated/
 .vscode/
-app
 elmo.img
 latest.log
 latest_nosudo.log
