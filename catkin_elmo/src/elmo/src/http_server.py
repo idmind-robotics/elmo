@@ -24,8 +24,8 @@ CORS(app)
 
 ONBOARD_COMMAND = {
     "text": "",
-    "image": "http://elmo:8000/images/sunglasses.png",
-    "video": "",
+    "image": "",
+    "video": "http://elmo:8000/videos/eyes_green_normal.mp4",
     "url": "",
 
 }
@@ -148,30 +148,6 @@ def delete_video(name):
         print("deleting " + full_name)
         os.remove(full_name)
         return jsonify("OK")
-
-
-@app.route("/video_clips", methods=["GET", "POST"])
-def video_clips():
-    if request.method == "GET":        
-        video_clips_list = os.listdir(rospy.get_param("http_server/static") + "/video_clips")
-        return jsonify(video_clips_list)
-    elif request.method == "POST":
-        file = request.files['file']
-        filename = secure_filename(file.filename)
-        path = rospy.get_param("http_server/static") + "/video_clips/"
-        file.save(path + filename)
-        return jsonify("OK")
-
-
-@app.route("/video_clips/<name>", methods=["DELETE"])
-def delete_video_clip(name):
-    if request.method == "DELETE":
-        full_name = rospy.get_param("http_server/static") + "/video_clips/" + name
-        print("deleting " + full_name)
-        os.remove(full_name)
-        return jsonify("OK")
-
-
 
 
 if __name__ == "__main__":

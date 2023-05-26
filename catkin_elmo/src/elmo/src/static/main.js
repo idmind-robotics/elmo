@@ -58,14 +58,18 @@ START_TIME = 1.0;
 END_TIME = 1.2;
 
 
-const playVideo = (video_name) => {
-    // plays video from start_time to end_time
-    log("play video: " + video_name);
+const playVideo = ({video_name, start_time, end_time}) => {
+    log("play video: " + video_name + " " + start_time + " " + end_time);
     hide(video);
     video.addEventListener("loadeddata", () => {
         show(video);
         video_bg.src = video_name;
-        video_bg.play();
+        if (end_time != 0) {
+            video_bg.currentTime = end_time;
+        } else {
+            console.log("duration: " + video.duration);
+            video_bg.currentTime = video.duration;
+        }
     });
     video.src = video_name;
     video.play();
@@ -73,7 +77,15 @@ const playVideo = (video_name) => {
     video.addEventListener("ended", () => {
         ONBOARD_STATE.video = null;
     });
-    
+    if (end_time != 0) {
+        video.addEventListener("timeupdate", () => {
+            if (video.currentTime >= end_time) {
+                video.pause();
+                hide(video);
+                ONBOARD_STATE.video = null;
+            }
+        });
+    }    
 };
 
 const setVideo = (video_name) => {
@@ -122,4 +134,3 @@ async function loop() {
 
 
 setInterval(loop, 100);
-// playVideo("http://localhost:8000/videos/elmo_eyes_green.mp4")

@@ -55,19 +55,17 @@ class Robot:
         self.touch_chest_threshold = 0
         self.behaviour_test_motors = False
         self.behaviour_test_leds = False
-        self.speech_list = []
+        self.video_list = []
         self.sound_list = []
         self.image_list = []
         self.icon_list = []
         self.volume = 0
-        self.video_port = "8081"
-        self.video_path = "/"
 
         self.multimedia_port = self.server_api.port
         self.image_address = self.server_api.image_address
         self.icon_address = self.server_api.icon_address
         self.sound_address = self.server_api.sound_address
-        self.speech_address = self.server_api.speech_address
+        self.video_address = self.server_api.video_address
 
     def update(self):
         # motors
@@ -95,7 +93,7 @@ class Robot:
         self.behaviour_test_motors = self.behaviour_api.is_behaviour_enabled("test_motors")
         self.behaviour_test_motors = self.behaviour_api.is_behaviour_enabled("test_leds")
         # server
-        self.speech_list = self.server_api.get_speech_list()
+        self.video_list = self.server_api.get_video_list()
         self.sound_list = self.server_api.get_sound_list()
         self.image_list = self.server_api.get_image_list()
         self.icon_list = self.server_api.get_icon_list()
@@ -144,9 +142,6 @@ class Robot:
         self.sound_api.play_sound_from_url(url)
         return True, "OK"
 
-    def play_speech(self, name):
-        return False, "play_speech() not implemented"
-
     def pause_audio(self):
         return False, "pause_audio() not implemented"
 
@@ -169,7 +164,7 @@ class Robot:
             self.onboard_api.set_image(url)
         elif video is not "":
             url = self.server_api.url_for_video(video)
-            self.onboard_api.set_video(url)
+            self.onboard_api.play_video(url)
         elif text is not "":
             self.onboard_api.set_text(text)
         elif url is not "":
@@ -202,7 +197,10 @@ robot = Robot()
 
 @app.route("/status")
 def status():
-    robot.update()
+    try:
+        robot.update()
+    except Exception as e:
+        print("Error updating status: " + str(e))
     return jsonify(robot.__dict__)
 
 
@@ -247,9 +245,6 @@ def command():
         elif op == "play_sound":
             name = req["name"]
             success, message = robot.play_sound(name)
-        elif op == "play_speech":
-            name = req["name"]
-            success, message = robot.play_speech(name)
         elif op == "pause_audio":
             success, message = robot.pause_audio()
         elif op == "set_volume":

@@ -277,14 +277,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.behaviour_test_leds.stateChanged.connect(enable_test_leds)
 
     def initialize_audio(self):
-        self.speech_list = []
         self.sound_list = []
         def play_sound():
             self.client.send_command("play_sound", name=self.audio_sound_list.currentText())
         self.audio_play_sound.clicked.connect(play_sound)
-        def play_speech():
-            self.client.send_command("play_speech", name=self.audio_speech_list.currentText())
-        self.audio_play_speech.clicked.connect(play_speech)
         def pause_audio():
             self.client.send_command("pause_audio")
         self.audio_pause.clicked.connect(pause_audio)
@@ -328,12 +324,12 @@ class Window(QMainWindow, Ui_MainWindow):
                 url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.icon_address
                 requests.post(url, files={'file': open(filename, 'rb')})
         self.multimedia_icon_upload.clicked.connect(upload_icon)
-        def upload_speech():
-            filename, _ = QFileDialog.getOpenFileName(self, 'Upload Speech', '.')
+        def upload_video():
+            filename, _ = QFileDialog.getOpenFileName(self, 'Upload Video', '.')
             if filename:
-                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.speech_address
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.video_address
                 requests.post(url, files={'file': open(filename, 'rb')})
-        self.multimedia_speech_upload.clicked.connect(upload_speech)
+        self.multimedia_video_upload.clicked.connect(upload_video)
         def upload_sound():
             filename, _ = QFileDialog.getOpenFileName(self, 'Upload Sound', '.')
             if filename:
@@ -354,13 +350,13 @@ class Window(QMainWindow, Ui_MainWindow):
                 print("delete: " + url)
                 requests.delete(url)
         self.multimedia_icon_delete.clicked.connect(delete_icon)
-        def delete_speech():
-            filename = self.multimedia_speech_list.currentText()
-            if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Delete speech %s?" % filename, buttons=QMessageBox.Ok | QMessageBox.Cancel):
-                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.speech_address + "/" + filename
+        def delete_video():
+            filename = self.multimedia_video_list.currentText()
+            if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Delete video %s?" % filename, buttons=QMessageBox.Ok | QMessageBox.Cancel):
+                url = "http://" + self.client.ip + ":" + str(self.client.multimedia_port) + self.client.video_address + "/" + filename
                 print("delete: " + url)
                 requests.delete(url)
-        self.multimedia_speech_delete.clicked.connect(delete_speech)
+        self.multimedia_video_delete.clicked.connect(delete_video)
         def delete_sound():
             filename = self.multimedia_sound_list.currentText()
             if QMessageBox.Ok == QMessageBox.warning(self, "Confirm", "Delete sound %s?" % filename, buttons=QMessageBox.Ok | QMessageBox.Cancel):
@@ -380,49 +376,52 @@ class Window(QMainWindow, Ui_MainWindow):
         self.wifi_update.clicked.connect(update_wifi_credentials)
 
     def update(self):
-        if self.client is not None:
+        if self.client is not None:            
+            print(self.client.__dict__)
             self.client.update_status()
-            self.motors_pan.setRange(self.client.pan_min, self.client.pan_max)
-            self.motors_pan_min.setNum(self.client.pan_min)
-            self.motors_pan_max.setNum(self.client.pan_max)
-            self.motors_pan_value.setNum(self.client.pan)
-            self.motors_pan_torque.setChecked(self.client.pan_torque)
-            self.motors_tilt.setRange(self.client.tilt_min, self.client.tilt_max)
-            self.motors_tilt_min.setNum(self.client.tilt_min)
-            self.motors_tilt_max.setNum(self.client.tilt_max)
-            self.motors_tilt_value.setNum(self.client.tilt)
-            self.motors_tilt_torque.setChecked(self.client.tilt_torque)
-            self.touch_chest.setChecked(self.client.touch_chest)
-            self.touch_head_n.setChecked(self.client.touch_head_n)
-            self.touch_head_s.setChecked(self.client.touch_head_s)
-            self.touch_head_e.setChecked(self.client.touch_head_e)
-            self.touch_head_w.setChecked(self.client.touch_head_w)
-            self.touch_head_threshold.setNum(self.client.touch_head_threshold)
-            self.touch_chest_threshold.setNum(self.client.touch_chest_threshold)
-            if self.client.icon_list != self.icon_list:
-                self.leds_icon_list.clear()
-                self.leds_icon_list.addItems(self.client.icon_list)
-                self.multimedia_icon_list.clear()
-                self.multimedia_icon_list.addItems(self.client.icon_list)
-                self.icon_list = self.client.icon_list
-            if self.client.speech_list != self.speech_list:
-                self.audio_speech_list.clear()
-                self.audio_speech_list.addItems(self.client.speech_list)
-                self.multimedia_speech_list.clear()
-                self.multimedia_speech_list.addItems(self.client.speech_list)
-                self.speech_list = self.client.speech_list
-            if self.client.sound_list != self.sound_list:
-                self.audio_sound_list.clear()
-                self.audio_sound_list.addItems(self.client.sound_list)
-                self.multimedia_sound_list.clear()
-                self.multimedia_sound_list.addItems(self.client.sound_list)
-                self.sound_list = self.client.sound_list
-            if self.client.image_list != self.image_list:
-                self.screen_image_list.clear()
-                self.screen_image_list.addItems(["<None>"] + self.client.image_list)
-                self.multimedia_image_list.clear()
-                self.multimedia_image_list.addItems(self.client.image_list)
-                self.image_list = self.client.image_list
+            try:
+                self.motors_pan.setRange(self.client.pan_min, self.client.pan_max)
+                self.motors_pan_min.setNum(self.client.pan_min)
+                self.motors_pan_max.setNum(self.client.pan_max)
+                self.motors_pan_value.setNum(self.client.pan)
+                self.motors_pan_torque.setChecked(self.client.pan_torque)
+                self.motors_tilt.setRange(self.client.tilt_min, self.client.tilt_max)
+                self.motors_tilt_min.setNum(self.client.tilt_min)
+                self.motors_tilt_max.setNum(self.client.tilt_max)
+                self.motors_tilt_value.setNum(self.client.tilt)
+                self.motors_tilt_torque.setChecked(self.client.tilt_torque)
+                self.touch_chest.setChecked(self.client.touch_chest)
+                self.touch_head_n.setChecked(self.client.touch_head_n)
+                self.touch_head_s.setChecked(self.client.touch_head_s)
+                self.touch_head_e.setChecked(self.client.touch_head_e)
+                self.touch_head_w.setChecked(self.client.touch_head_w)
+                self.touch_head_threshold.setNum(self.client.touch_head_threshold)
+                self.touch_chest_threshold.setNum(self.client.touch_chest_threshold)
+                if self.client.icon_list != self.icon_list:
+                    self.leds_icon_list.clear()
+                    self.leds_icon_list.addItems(self.client.icon_list)
+                    self.multimedia_icon_list.clear()
+                    self.multimedia_icon_list.addItems(self.client.icon_list)
+                    self.icon_list = self.client.icon_list
+                if self.client.video_list != self.video_list:
+                    self.multimedia_video_list.clear()
+                    self.multimedia_video_list.addItems(self.client.video_list)
+                    self.video_list = self.client.video_list
+                if self.client.sound_list != self.sound_list:
+                    self.audio_sound_list.clear()
+                    self.audio_sound_list.addItems(self.client.sound_list)
+                    self.multimedia_sound_list.clear()
+                    self.multimedia_sound_list.addItems(self.client.sound_list)
+                    self.sound_list = self.client.sound_list
+                if self.client.image_list != self.image_list:
+                    self.screen_image_list.clear()
+                    self.screen_image_list.addItems(["<None>"] + self.client.image_list)
+                    self.multimedia_image_list.clear()
+                    self.multimedia_image_list.addItems(self.client.image_list)
+                    self.image_list = self.client.image_list
+            except Exception as e:
+                print(e)
+                pass
 
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update)

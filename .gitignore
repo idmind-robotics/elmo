@@ -1,4 +1,5 @@
 app/app
+app/__pycache__
 build/
 build_isolated/
 devel/
@@ -8,3 +9,4 @@ elmo.img
 latest.log
 latest_nosudo.log
 __pycache__/
+*.pyc

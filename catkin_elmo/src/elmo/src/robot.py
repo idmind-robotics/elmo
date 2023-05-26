@@ -98,12 +98,11 @@ class Server:
 
     def __init__(self):
         self.port = rospy.get_param("http_server/port")
-        self.computer_name = "localhost" # "elmo"
+        self.computer_name = "elmo"
         self.image_address = "/images"
         self.icon_address = "/icons"
         self.sound_address = "/sounds"
         self.video_address = "/videos"
-        self.video_clip_address = "/video_clips"
 
     def get_icon_list(self):
         url = "http://" + self.computer_name + ":" + str(self.port) + self.icon_address
@@ -187,12 +186,12 @@ class Onboard:
         command_description = json.dumps(command)
         self.command_pub.publish(command_description)
 
-    def play_video(self, video, start_time=0.0, end_time=0.0):
+    def play_video(self, video_name, start_time=0.0, end_time=0.0):
         command = {
             "image": None,
             "text": None,
             "video": {
-                "name": video_name,
+                "video_name": video_name,
                 "start_time": start_time,
                 "end_time": end_time
             },

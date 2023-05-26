@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>792</width>
-    <height>766</height>
+    <height>765</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,7 +20,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resource.qrc">
+   <iconset>
     <normaloff>:/res/icon.ico</normaloff>:/res/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -352,8 +352,8 @@
       <property name="title">
        <string>Screen</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_14">
-       <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="0" column="1">
         <widget class="QLabel" name="label_35">
          <property name="font">
           <font>
@@ -365,16 +365,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QComboBox" name="screen_image_list">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
+       <item row="2" column="1">
         <widget class="QLabel" name="label_36">
          <property name="font">
           <font>
@@ -386,7 +377,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="2">
+       <item row="2" column="2" colspan="2">
         <widget class="QLineEdit" name="screen_text">
          <property name="font">
           <font>
@@ -395,7 +386,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="3" column="1">
         <widget class="QLabel" name="label_37">
          <property name="font">
           <font>
@@ -407,7 +398,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1" colspan="2">
+       <item row="3" column="2" colspan="2">
         <widget class="QLineEdit" name="screen_url">
          <property name="font">
           <font>
@@ -416,7 +407,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="1">
         <widget class="QCheckBox" name="screen_camera">
          <property name="font">
           <font>
@@ -428,7 +419,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="2">
         <widget class="QPushButton" name="screen_clear">
          <property name="font">
           <font>
@@ -440,7 +431,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
+       <item row="4" column="3">
         <widget class="QPushButton" name="screen_update">
          <property name="font">
           <font>
@@ -449,6 +440,36 @@
          </property>
          <property name="text">
           <string>Update</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="2">
+        <widget class="QComboBox" name="screen_video_list">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_38">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Video</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QComboBox" name="screen_image_list">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
          </property>
         </widget>
        </item>
@@ -467,43 +488,6 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_16">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_29">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Speech</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QComboBox" name="audio_speech_list">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="audio_play_speech">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resource.qrc">
-           <normaloff>:/res/icons/control.png</normaloff>:/res/icons/control.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
         <widget class="QLabel" name="label_32">
          <property name="font">
           <font>
@@ -515,7 +499,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="2">
+       <item row="0" column="1" colspan="2">
         <widget class="QComboBox" name="audio_sound_list">
          <property name="font">
           <font>
@@ -524,7 +508,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
+       <item row="0" column="3">
         <widget class="QPushButton" name="audio_play_sound">
          <property name="font">
           <font>
@@ -535,12 +519,12 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resource.qrc">
+          <iconset>
            <normaloff>:/res/icons/control.png</normaloff>:/res/icons/control.png</iconset>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="1" column="0">
         <widget class="QLabel" name="label_33">
          <property name="font">
           <font>
@@ -552,7 +536,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="1" column="1">
         <widget class="QSlider" name="audio_volume">
          <property name="font">
           <font>
@@ -564,7 +548,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="1" column="2">
         <widget class="QLabel" name="label_43">
          <property name="minimumSize">
           <size>
@@ -582,7 +566,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="3">
+       <item row="1" column="3">
         <widget class="QPushButton" name="audio_pause">
          <property name="font">
           <font>
@@ -593,7 +577,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resource.qrc">
+          <iconset>
            <normaloff>:/res/icons/control-pause.png</normaloff>:/res/icons/control-pause.png</iconset>
          </property>
         </widget>
@@ -1266,12 +1250,12 @@ Limits</string>
           </font>
          </property>
          <property name="text">
-          <string>Speech</string>
+          <string>Videos</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QComboBox" name="multimedia_speech_list">
+        <widget class="QComboBox" name="multimedia_video_list">
          <property name="font">
           <font>
            <pointsize>9</pointsize>
@@ -1280,7 +1264,7 @@ Limits</string>
         </widget>
        </item>
        <item row="2" column="2">
-        <widget class="QPushButton" name="multimedia_speech_delete">
+        <widget class="QPushButton" name="multimedia_video_delete">
          <property name="font">
           <font>
            <pointsize>9</pointsize>
@@ -1292,7 +1276,7 @@ Limits</string>
         </widget>
        </item>
        <item row="2" column="3">
-        <widget class="QPushButton" name="multimedia_speech_upload">
+        <widget class="QPushButton" name="multimedia_video_upload">
          <property name="font">
           <font>
            <pointsize>9</pointsize>
