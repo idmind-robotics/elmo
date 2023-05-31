@@ -149,14 +149,24 @@ class Server:
 class Onboard:
 
     def __init__(self):
+        self.user_request_callbacks = {}
         self.state = {
 
         }
         self.command_pub = rospy.Publisher("onboard/command", String, queue_size=10)
         rospy.Subscriber("onboard/state", String, self.__on_state)
+        rospy.Subscriber("onboard/user_request", String, self.on_user_request)
     
     def __on_state(self, msg):
         self.state = json.loads(msg.data)
+
+    def user_request_cb(self, request, callback):
+        self.user_request_callbacks[request] = callback
+
+    def on_user_request(self, msg):
+        request = msg.data
+        if request in self.user_request_callbacks:
+            self.user_request_callbacks[request]()
 
     def get_state(self):
         return self.state
@@ -220,6 +230,16 @@ class Onboard:
 
     def is_playing_video(self):
         return self.state["video"] is not None and self.state["video"] != ""
+
+    def reset(self):
+        command = {
+            "image": None,
+            "text": None,
+            "video": None,
+            "url": None
+        }
+        command_description = json.dumps(command)
+        self.command_pub.publish(command_description)
 
 
 class Touch:

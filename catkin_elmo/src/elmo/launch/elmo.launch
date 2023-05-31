@@ -45,4 +45,6 @@
     <!--node pkg="elmo" output="screen" type="start_routine.py"    name="start_routine" /-->
     <!--node pkg="elmo" output="screen" type="start_demo.py"    name="start_demo" /-->
     
+    <!-- behaviours -->
+    <node pkg="elmo" type="call_friend.py"    name="call_friend" />
 </launch>
