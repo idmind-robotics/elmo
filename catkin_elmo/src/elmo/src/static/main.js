@@ -17,6 +17,18 @@ const ONBOARD_STATE = {
     "video": null,
 };
 
+let SHOWING_MENU = false;
+
+img_eyes.onclick = () => {
+    if (!SHOWING_MENU) {
+        SHOWING_MENU = true;
+        window.setTimeout(() => {
+            log("reset menu")
+            SHOWING_MENU = false;
+        }, 1000);
+    }
+};
+
 const reset_state = () => {
     ONBOARD_STATE.image = null;
     ONBOARD_STATE.text = null;
@@ -88,6 +100,14 @@ const playVideo = ({video_name, start_time, end_time}) => {
 
 let last_command = null;
 async function loop() {
+    // menu override
+    if (SHOWING_MENU) {
+        show(div_console);
+        return;
+    } else {
+        hide(div_console);
+    }
+
     // get command
     const result = await fetch(COMMAND_URL);
     const data = await result.json();

@@ -72,10 +72,12 @@ class Node:
                     f.write(audio.get_wav_data())
                 print("transcribing")
                 if self.language == "pt":
-                    # value = self.recognizer.recognize_google(audio, language="pt-PT")
+                    # value = self.recognizer.recognize_sphinx(audio, language="pt-PT")
+                    # value = self.recognizer.recognize_vosk(audio, language="pt-PT")
                     value = self.recognizer.recognize_google(audio, language="pt-PT")
                 else:
-                    # value = self.recognizer.recognize_google(audio)
+                    # value = self.recognizer.recognize_sphinx(audio)
+                    # value = self.recognizer.recognize_vosk(audio)
                     value = self.recognizer.recognize_google(audio)
                 print("recognized: %s" % value)
                 self.pub.publish(value)

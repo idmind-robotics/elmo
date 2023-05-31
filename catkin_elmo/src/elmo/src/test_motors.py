@@ -9,6 +9,7 @@ from std_msgs.msg import String
 
 MIN_SLEEP = 2.0
 MAX_SLEEP = 4.0
+MAX_RANGE = 30.0
 
 
 class Node:
@@ -41,12 +42,22 @@ class Node:
 
     def run(self):
         rate = rospy.Rate(10)
+        last_pan_ref = 0.0
+        last_tilt_ref = 0.0
         while not rospy.is_shutdown():
             rate.sleep()
             if self.enabled:
                 limits = self.pan_tilt_api.get_limits()
                 pan = random.uniform(limits["min_pan_angle"], limits["max_pan_angle"])
                 tilt = random.uniform(limits["min_tilt_angle"], limits["max_tilt_angle"])
+                if pan > last_pan_ref + MAX_RANGE:
+                    pan = last_pan_ref + MAX_RANGE
+                elif pan < last_pan_ref - MAX_RANGE:
+                    pan = last_pan_ref - MAX_RANGE
+                if tilt > last_tilt_ref + MAX_RANGE:
+                    tilt = last_tilt_ref + MAX_RANGE
+                elif tilt < last_tilt_ref - MAX_RANGE:
+                    tilt = last_tilt_ref - MAX_RANGE
                 self.pan_tilt_api.set_angles(
                     pan=pan,
                     tilt=tilt
