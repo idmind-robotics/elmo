@@ -22,6 +22,9 @@ $ sudo apt-get install portaudio19-dev python-pyaudio flac
 """
 
 
+UNRECOGNIZED = "I'm sorry, I didn't understand that."
+
+
 class Node:
 
     def __init__(self):
@@ -54,11 +57,12 @@ class Node:
             if not self.enabled:
                 continue
             try:
-                print("calibrating")
+                # print("calibrating")
                 with self.microphone as source:
                     self.recognizer.adjust_for_ambient_noise(source)
-                print("Calibration done. Minimum energy: %f" % self.recognizer.energy_threshold)
-                self.recognizer.energy_threshold *= 0.70
+                # print("Calibration done. Minimum energy: %f" % self.recognizer.energy_threshold)
+                self.recognizer.energy_threshold *= 2.0
+                # self.recognizer.energy_threshold = 200
                 print("Adjusting to %f" % self.recognizer.energy_threshold)
                 with self.microphone as source:
                     print("listening")
@@ -68,13 +72,15 @@ class Node:
                     f.write(audio.get_wav_data())
                 print("transcribing")
                 if self.language == "pt":
+                    # value = self.recognizer.recognize_google(audio, language="pt-PT")
                     value = self.recognizer.recognize_google(audio, language="pt-PT")
                 else:
+                    # value = self.recognizer.recognize_google(audio)
                     value = self.recognizer.recognize_google(audio)
+                print("recognized: %s" % value)
                 self.pub.publish(value)
-                self.enabled = False
             except sr.UnknownValueError:
-                if self.unrecognized:
+                if self.unrecognized is not None:
                     os.system("aplay %s" % self.unrecognized)
                 else:
                     msg = UNRECOGNIZED

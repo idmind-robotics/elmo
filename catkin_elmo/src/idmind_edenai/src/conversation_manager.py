@@ -27,6 +27,7 @@ class Node:
         )
         rospy.Subscriber("text_to_speech/speaking", Bool, self.on_speaking)
         self.enable_speech_to_text_srv = None
+        self.disable_speech_to_text_srv = None
     
     def enable_speech_to_text(self):
         if self.enable_speech_to_text_srv is not None:
@@ -40,11 +41,24 @@ class Node:
             else:
                 print("service speech_to_text/enable is unavailable, ignoring.")
 
+    def disable_speech_to_text(self):
+        if self.disable_speech_to_text_srv is not None:
+            print("disabling speech to text")
+            self.disable_speech_to_text_srv()
+        else:
+            if "speech_to_text/disable" in rosservice.get_service_list():
+                self.disable_speech_to_text_srv = rospy.ServiceProxy("speech_to_text/disable", Trigger)
+                print("disabling speech to text")
+                self.disable_speech_to_text_srv()
+            else:
+                print("service speech_to_text/disable is unavailable, ignoring.")
+
 
     def on_speech_to_text(self, msg):
         print("got speech")
         if self.state == STATE_LISTENING:
             print("is listening")
+            self.disable_speech_to_text()
             text = msg.data
             self.conversation_input_pub.publish(text)
             self.state = STATE_PROCESSING

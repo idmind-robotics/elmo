@@ -20,16 +20,7 @@ class Node:
     def __init__(self):
         while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
             rospy.sleep(0.1)
-        rospy.loginfo(rospy.get_name() + ": Connecting to herkulex buffer...")
-        hx.connect("/dev/ttyS0", 115200)
-        hx.clear_errors()
-        pan_id = rospy.get_param("/pan_tilt/pan_id")
-        tilt_id = rospy.get_param("/pan_tilt/tilt_id")
-        rospy.loginfo(rospy.get_name() + ": Connecting to servos...")
-        self.pan = hx.servo(pan_id)
-        self.tilt = hx.servo(tilt_id)
-        rospy.loginfo(rospy.get_name() + ": Calibrating servos...")
-        self.calibrate_pid()
+        self.connect()
         self.status_pan_torque = False
         self.status_pan_angle = self.pan.get_servo_angle()
         self.status_pan_angle_ref = self.status_pan_angle
@@ -47,6 +38,18 @@ class Node:
         rospy.Subscriber("pan_tilt/command", PanTilt, self.on_command)
         rospy.Subscriber("pan_tilt/command_raw", PanTilt, self.on_command_raw)
         rospy.Service("pan_tilt/recalibrate_pid", Trigger, self.on_recalibrate_pid)
+
+    def connect(self):
+        rospy.loginfo(rospy.get_name() + ": Connecting to herkulex buffer...")
+        hx.connect("/dev/ttyS0", 115200)
+        hx.clear_errors()
+        pan_id = rospy.get_param("/pan_tilt/pan_id")
+        tilt_id = rospy.get_param("/pan_tilt/tilt_id")
+        rospy.loginfo(rospy.get_name() + ": Connecting to servos...")
+        self.pan = hx.servo(pan_id)
+        self.tilt = hx.servo(tilt_id)
+        rospy.loginfo(rospy.get_name() + ": Calibrating servos...")
+        self.calibrate_pid()
 
     @property
     def pan_pid_p(self):
@@ -176,7 +179,7 @@ class Node:
                     # continue
                 elif self.command_pan_angle != self.status_pan_angle_ref:
                     self.pan.set_servo_angle(self.command_pan_angle, int(self.command_playtime), 0)
-                    print("pan: %.2f %d" % (self.command_pan_angle, self.command_playtime))
+                    # print("pan: %.2f %d" % (self.command_pan_angle, self.command_playtime))
                     # self.pan.set_servo_angle(self.command_pan_angle, 100, 0)
                     self.status_pan_angle_ref = self.command_pan_angle
                     # continue
@@ -191,12 +194,35 @@ class Node:
                     # continue
                 elif self.command_tilt_angle != self.status_tilt_angle_ref:
                     self.tilt.set_servo_angle(self.command_tilt_angle, int(self.command_playtime), 0)
-                    print("tilt: %.2f %d" % (self.command_tilt_angle, self.command_playtime))
+                    # print("tilt: %.2f %d" % (self.command_tilt_angle, self.command_playtime))
                     # self.tilt.set_servo_angle(self.command_tilt_angle, 100, 0)
                     self.status_tilt_angle_ref = self.command_tilt_angle
                     # continue
             except Exception as e:
-                rospy.logerr(rospy.get_name() + str(e))
+                try:
+                    self.status_pan_torque = False
+                    self.status_pan_angle = self.pan.get_servo_angle()
+                    self.status_pan_angle_ref = self.status_pan_angle
+                    self.status_pan_temperature = self.pan.get_servo_temperature()
+                    self.status_tilt_torque = False
+                    self.status_tilt_angle = self.tilt.get_servo_angle()
+                    self.status_tilt_angle_ref = self.status_tilt_angle
+                    self.status_tilt_temperature = self.tilt.get_servo_temperature()
+                    self.command_pan_torque = False
+                    self.command_pan_angle = self.status_pan_angle
+                    self.command_tilt_torque = False
+                    self.command_tilt_angle = self.status_tilt_angle
+                    self.command_playtime = 0
+                    rospy.logerr(rospy.get_name() + ": " + str(e))
+                    rospy.logerr("attempting to recover")
+                    rospy.sleep(1.0)
+                    rospy.loginfo("closing connection")
+                    hx.close()
+                    rospy.sleep(1.0)
+                    rospy.loginfo("opening connection")
+                    self.connect()
+                except:
+                    pass
 
         rospy.logwarn("disabling torque")
         self.pan.torque_off()

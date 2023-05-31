@@ -31,6 +31,8 @@ class Leds:
             response = requests.get(url)
             img = BytesIO(response.content)
             image = Image.open(img)
+            # create image buffer
+            messages = []
             try:
                 while 1:
                     image.seek(image.tell() + 1)
@@ -40,11 +42,14 @@ class Leds:
                             im = image.convert("RGB")
                             color = im.getpixel((12 - col, row))
                             msg.colors.append(ColorRGBA(r=color[0], g=color[1], b=color[2], a=0))
-                    self.pub.publish(msg)
-                    rospy.sleep(image.info["duration"] / 1000.0)
+                    messages.append(msg)
             except EOFError:
                 msg = Colors()
-                self.pub.publish(msg)
+                messages.append(msg)
+            # schedule the publishing of the messages
+            time_between_frames = image.info["duration"] / 1000.0
+            for i in range(len(messages)):
+                threading.Timer(time_between_frames * i, self.pub.publish, args=[messages[i]]).start()
         else:
             msg = Colors()
             response = requests.get(url)
@@ -212,6 +217,9 @@ class Onboard:
 
     def get_default_image(self):
         return rospy.get_param("onboard/default_image")
+
+    def is_playing_video(self):
+        return self.state["video"] is not None and self.state["video"] != ""
 
 
 class Touch:

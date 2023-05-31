@@ -24,8 +24,8 @@ CORS(app)
 
 ONBOARD_COMMAND = {
     "text": "",
-    "image": "",
-    "video": "http://elmo:8000/videos/eyes_green_normal.mp4",
+    "image": "http://elmo:8000/images/normal.png",
+    "video": "",
     "url": "",
 
 }

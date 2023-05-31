@@ -2,6 +2,8 @@
     <rosparam subst_value="true">
 
     </rosparam>
-    <!--node pkg="elmo" output="screen" type="speakers.py" name="speakers" /-->
+    
+    <!-- ai tools   -->
+    <include file="$(find idmind_edenai)/launch/norway.launch" />
 
 </launch>

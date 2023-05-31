@@ -8,8 +8,20 @@ from std_msgs.msg import UInt32MultiArray
 from elmo.msg import TouchEvent
 
 
+def calculate_bollinger_bands(numbers, window_size, num_std):
+    # Calculate rolling mean and standard deviation
+    rolling_mean = np.convolve(numbers, np.ones(window_size)/window_size, mode='valid')
+    rolling_std = np.sqrt(np.convolve(np.square(numbers - rolling_mean), np.ones(window_size)/window_size, mode='valid'))
+
+    # Calculate upper and lower bands
+    upper_band = rolling_mean + num_std * rolling_std
+    lower_band = rolling_mean - num_std * rolling_std
+
+    return upper_band, rolling_mean, lower_band
+
+
 WINDOW_SIZE = 100
-SENSITIVITY = 5
+STD_DEV = 4
 
 
 class Node:
@@ -26,9 +38,7 @@ class Node:
         print("calculating limits")
         self.limits = []
         for window in self.windows:
-            rolling_mean = np.mean(window)
-            upper_band = rolling_mean + SENSITIVITY
-            lower_band = rolling_mean - SENSITIVITY
+            upper_band, rolling_mean, lower_band = calculate_bollinger_bands(window, len(window), STD_DEV)
             self.limits.append({
                 "upper": upper_band,
                 "lower": lower_band
@@ -51,9 +61,7 @@ class Node:
             print("---")
             self.limits = []
             for window in self.windows:
-                rolling_mean = np.mean(window)
-                upper_band = rolling_mean + SENSITIVITY
-                lower_band = rolling_mean - SENSITIVITY
+                upper_band, rolling_mean, lower_band = calculate_bollinger_bands(window, len(window), STD_DEV)
                 self.limits.append({
                     "upper": upper_band,
                     "lower": lower_band
@@ -61,8 +69,8 @@ class Node:
             # print touch sensor (idx 0) values and limit, for debugging
             touch_sensor_idx = 0
             value = self.windows[touch_sensor_idx][-1]
-            upper = self.limits[touch_sensor_idx]["upper"]
-            lower = self.limits[touch_sensor_idx]["lower"]
+            upper = self.limits[touch_sensor_idx]["upper"][-1]
+            lower = self.limits[touch_sensor_idx]["lower"][-1]
             msg = "above" if value > upper else "below" if value < lower else ""
             print("value: %d, upper: %d, lower: %d, %s" % (value, upper, lower, msg))
             msg = TouchEvent()

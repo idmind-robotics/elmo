@@ -2,7 +2,6 @@ const div_console = document.getElementById("div-console");
 const img_eyes = document.getElementById("img-eyes");
 const p_text = document.getElementById("p-text");
 const video = document.getElementById("video");
-const video_bg = document.getElementById("video-bg");
 
 
 
@@ -18,11 +17,14 @@ const ONBOARD_STATE = {
     "video": null,
 };
 
+const reset_state = () => {
+    ONBOARD_STATE.image = null;
+    ONBOARD_STATE.text = null;
+    ONBOARD_STATE.video = null;
+};
+
 
 const show = (element) => {
-    hide(img_eyes);
-    hide(p_text);
-    hide(video);
     element.style.display = "block";
 };
 
@@ -33,9 +35,9 @@ const hide = (element) => {
 
 
 hide(div_console);
-// hide(img_eyes);
-// hide(p_text);
-// hide(video);
+hide(img_eyes);
+hide(p_text);
+hide(video);
 
 const log = (msg) => {
     div_console.textContent = msg.toUpperCase();
@@ -44,13 +46,21 @@ const log = (msg) => {
 
 
 const loadImage = (image_name) => {
+    reset_state();
     log("loading image: " + image_name);
+    hide(video);
+    hide(p_text);
     img_eyes.src = image_name;
+    show(img_eyes);
 };
 
 const setText = (text) => {
+    reset_state();
     log("set text: " + text);
+    hide(img_eyes);
+    hide(video);
     p_text.textContent = text.toUpperCase();
+    show(p_text);
 };
 
 
@@ -59,17 +69,13 @@ END_TIME = 1.2;
 
 
 const playVideo = ({video_name, start_time, end_time}) => {
+    reset_state();
     log("play video: " + video_name + " " + start_time + " " + end_time);
+    hide(img_eyes);
+    hide(p_text);
     hide(video);
     video.addEventListener("loadeddata", () => {
         show(video);
-        video_bg.src = video_name;
-        if (end_time != 0) {
-            video_bg.currentTime = end_time;
-        } else {
-            console.log("duration: " + video.duration);
-            video_bg.currentTime = video.duration;
-        }
     });
     video.src = video_name;
     video.play();
@@ -77,22 +83,8 @@ const playVideo = ({video_name, start_time, end_time}) => {
     video.addEventListener("ended", () => {
         ONBOARD_STATE.video = null;
     });
-    if (end_time != 0) {
-        video.addEventListener("timeupdate", () => {
-            if (video.currentTime >= end_time) {
-                video.pause();
-                hide(video);
-                ONBOARD_STATE.video = null;
-            }
-        });
-    }    
 };
 
-const setVideo = (video_name) => {
-    log("set video: " + video_name);
-    hide(video);
-    video_bg.src = video_name;
-};
 
 let last_command = null;
 async function loop() {
@@ -105,17 +97,14 @@ async function loop() {
     last_command = data.command;
     // process command
     if (data.image && data.image !== ONBOARD_STATE.image) {
-        show(img_eyes);
         loadImage(data.image);
         ONBOARD_STATE.image = data.image;
     }
     if (data.text && data.text !== ONBOARD_STATE.text) {
-        show(p_text);
         setText(data.text);
         ONBOARD_STATE.text = data.text;
     }
     if (data.video && data.video !== ONBOARD_STATE.video) {
-        show(video);
         playVideo(data.video);
         // playVideo();
         ONBOARD_STATE.video = data.video;
