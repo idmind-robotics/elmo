@@ -40,11 +40,14 @@ class Node:
         audio_url = self.server.url_for_sound(self.audio)
         self.onboard.play_video(video_url)
         rospy.sleep(0.5)
-        self.sound.play_sound_from_url(audio_url)
+        # self.sound.play_sound_from_url(audio_url)
         while not rospy.is_shutdown():
             rospy.sleep(0.1)
             if not self.onboard.is_playing_video():
                 break
+        # self.onboard.set_text("Call finished.")
+        # rospy.sleep(3.0)
+        self.onboard.reset()
         rospy.loginfo("call finished")
         
 

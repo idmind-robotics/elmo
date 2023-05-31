@@ -9,8 +9,8 @@
             pan_id: 3
             pan_p: 150
             pan_d: 100
-            min_pan_angle: -50
-            max_pan_angle: 50
+            min_pan_angle: -40
+            max_pan_angle: 40
             tilt_id: 4
             tilt_p: 140
             tilt_d: 100
