@@ -31,19 +31,25 @@ class Node:
         self.onboard = r.Onboard()
         self.server = r.Server()
         self.sound = r.Sound()
-        rospy.Subscriber("/ai/speech_to_text/output", String, self.on_speech)
+        self.onboard.user_request_cb("call", self.on_call_request)
 
-    def on_speech(self, msg):
-        if self.onboard.is_playing_video():
-            return
-        text = msg.data.lower()
-        # check if any keywords are in the text
-        if any([keyword in text for keyword in self.keywords]):
-            video_url = self.server.url_for_video(self.video)
-            audio_url = self.server.url_for_sound(self.audio)
-            self.onboard.play_video(video_url)
-            self.sound.play_sound_from_url(audio_url)
-
+    def on_call_request(self):
+        self.onboard.set_text("Calling friend...")
+        rospy.sleep(3.0)
+        video_url = self.server.url_for_video(self.video)
+        audio_url = self.server.url_for_sound(self.audio)
+        self.onboard.play_video(video_url)
+        rospy.sleep(0.5)
+        # self.sound.play_sound_from_url(audio_url)
+        while not rospy.is_shutdown():
+            rospy.sleep(0.1)
+            if not self.onboard.is_playing_video():
+                break
+        # self.onboard.set_text("Call finished.")
+        # rospy.sleep(3.0)
+        self.onboard.reset()
+        rospy.loginfo("call finished")
+        
 
 if __name__ == '__main__':
     rospy.init_node('call_friend')

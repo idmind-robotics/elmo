@@ -44,10 +44,7 @@ def index():
 @app.route("/api/onboard/command")
 def onboard_command():
     res = jsonify(ONBOARD_COMMAND)
-    ONBOARD_COMMAND["text"] = ""
-    ONBOARD_COMMAND["image"] = ""
     ONBOARD_COMMAND["video"] = ""
-    ONBOARD_COMMAND["url"] = ""
     return res
 
 
@@ -58,6 +55,14 @@ def onboard_state():
         ONBOARD_STATE[k] = state[k]
     onboard_state_description = json.dumps(ONBOARD_STATE)
     state_pub.publish(onboard_state_description)
+    return jsonify({})
+
+
+@app.route("/api/onboard/user_request", methods=["POST"])
+def onboard_request():
+    print(request.json)
+    r = request.json["request"]
+    user_request_pub.publish(r)
     return jsonify({})
 
 
@@ -164,6 +169,7 @@ if __name__ == "__main__":
             ONBOARD_COMMAND[k] = command[k]
     rospy.Subscriber("/onboard/command", String, on_command)
     state_pub = rospy.Publisher("/onboard/state", String, queue_size=10)
+    user_request_pub = rospy.Publisher("/onboard/user_request", String, queue_size=10)
     while not rospy.is_shutdown():
         rospy.sleep(0.1)
     print("server shutting down")

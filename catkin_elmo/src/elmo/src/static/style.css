@@ -58,7 +58,30 @@ body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    
+
+}
+
+#menu {
+    display: flex;
+
+}
+
+#menu >div {
+    padding: 1rem;
+    background-color: white;
+    border-radius: 4px;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+
+#menu img {
+    height: 40vh;
+    border-radius: 4px;
+}
+
+#menu img:active {
+    opacity: 0.5;
 
 }
 

@@ -2,14 +2,17 @@ const div_console = document.getElementById("div-console");
 const img_eyes = document.getElementById("img-eyes");
 const p_text = document.getElementById("p-text");
 const video = document.getElementById("video");
+const menu = document.getElementById("menu");
+
+const menu_call = document.getElementById("menu-call");
+const menu_music = document.getElementById("menu-music");
+const menu_alarm = document.getElementById("menu-alarm");
 
 
+const COMMAND_URL = "http://elmo:8000/api/onboard/command";
+const STATE_URL = "http://elmo:8000/api/onboard/state";
+const USER_REQUEST_URL = "http://elmo:8000/api/onboard/user_request";
 
-// const COMMAND_URL = "http://elmo:8000/api/onboard/command";
-// const STATE_URL = "http://elmo:8000/api/onboard/state";
-
-const COMMAND_URL = "http://localhost:8000/api/onboard/command";
-const STATE_URL = "http://localhost:8000/api/onboard/state";
 
 const ONBOARD_STATE = {
     "image": null,
@@ -17,17 +20,51 @@ const ONBOARD_STATE = {
     "video": null,
 };
 
+
 let SHOWING_MENU = false;
 
-img_eyes.onclick = () => {
-    if (!SHOWING_MENU) {
-        SHOWING_MENU = true;
-        window.setTimeout(() => {
-            log("reset menu")
-            SHOWING_MENU = false;
-        }, 1000);
-    }
+const publish_user_request = (r) => {
+    // post "call" to user request
+    fetch(USER_REQUEST_URL, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"request": r})
+    });
+    hide(menu);
+    SHOWING_MENU = false;
+}
+
+
+menu_call.onclick = () => {
+    publish_user_request("call");
 };
+
+
+menu_music.onclick = () => {
+    publish_user_request("music");
+};
+
+
+menu_alarm.onclick = () => {
+    publish_user_request("alarm");
+};
+
+
+img_eyes.onclick = () => {
+    hide(img_eyes);
+    show_flex(menu);
+    SHOWING_MENU = true;
+    window.setTimeout(() => {
+        log("reset menu")
+        hide(menu);
+        SHOWING_MENU = false;
+    }, 5000);
+};
+
 
 const reset_state = () => {
     ONBOARD_STATE.image = null;
@@ -41,12 +78,18 @@ const show = (element) => {
 };
 
 
+const show_flex = (element) => {
+    element.style.display = "flex";
+};
+
+
 const hide = (element) => {
     element.style.display = "none";
 };
 
 
 hide(div_console);
+hide(menu);
 hide(img_eyes);
 hide(p_text);
 hide(video);
@@ -56,9 +99,7 @@ const log = (msg) => {
     console.log(msg);
 };
 
-
 const loadImage = (image_name) => {
-    reset_state();
     log("loading image: " + image_name);
     hide(video);
     hide(p_text);
@@ -67,7 +108,6 @@ const loadImage = (image_name) => {
 };
 
 const setText = (text) => {
-    reset_state();
     log("set text: " + text);
     hide(img_eyes);
     hide(video);
@@ -81,7 +121,6 @@ END_TIME = 1.2;
 
 
 const playVideo = ({video_name, start_time, end_time}) => {
-    reset_state();
     log("play video: " + video_name + " " + start_time + " " + end_time);
     hide(img_eyes);
     hide(p_text);
@@ -100,12 +139,8 @@ const playVideo = ({video_name, start_time, end_time}) => {
 
 let last_command = null;
 async function loop() {
-    // menu override
     if (SHOWING_MENU) {
-        show(div_console);
         return;
-    } else {
-        hide(div_console);
     }
 
     // get command
@@ -116,18 +151,33 @@ async function loop() {
     }
     last_command = data.command;
     // process command
-    if (data.image && data.image !== ONBOARD_STATE.image) {
-        loadImage(data.image);
+    if (data.image !== ONBOARD_STATE.image) {
+        if (data.image) {
+            ONBOARD_STATE.image = data.image;
+            loadImage(data.image);
+        } else {
+            ONBOARD_STATE.image = null;
+            hide(img_eyes);
+        }
+    }
+    if (data.text !== ONBOARD_STATE.text) {
+        if (data.text) {
+            ONBOARD_STATE.text = data.text;
+            setText(data.text);
+        } else {
+            ONBOARD_STATE.text = null;
+            hide(p_text);
+        }
+    }
+    if (data.video !== ONBOARD_STATE.video) {
+        if (data.video) {
+            ONBOARD_STATE.video = data.video;
+            playVideo(data.video);
+        }
+    }
+    if (!ONBOARD_STATE.image && !ONBOARD_STATE.text && !ONBOARD_STATE.video) {
         ONBOARD_STATE.image = data.image;
-    }
-    if (data.text && data.text !== ONBOARD_STATE.text) {
-        setText(data.text);
-        ONBOARD_STATE.text = data.text;
-    }
-    if (data.video && data.video !== ONBOARD_STATE.video) {
-        playVideo(data.video);
-        // playVideo();
-        ONBOARD_STATE.video = data.video;
+        loadImage("images/normal.png");
     }
     // update state
     await fetch(STATE_URL, { 

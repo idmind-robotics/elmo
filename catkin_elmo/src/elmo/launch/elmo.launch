@@ -9,8 +9,8 @@
             pan_id: 3
             pan_p: 150
             pan_d: 100
-            min_pan_angle: -50
-            max_pan_angle: 50
+            min_pan_angle: -40
+            max_pan_angle: 40
             tilt_id: 4
             tilt_p: 140
             tilt_d: 100
@@ -45,4 +45,6 @@
     <!--node pkg="elmo" output="screen" type="start_routine.py"    name="start_routine" /-->
     <!--node pkg="elmo" output="screen" type="start_demo.py"    name="start_demo" /-->
     
+    <!-- behaviours -->
+    <node pkg="elmo" type="call_friend.py"    name="call_friend" />
 </launch>

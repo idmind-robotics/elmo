@@ -34,7 +34,7 @@ class Node:
                         self.onboard_api.set_image(self.server_api.url_for_image("love.png"))
                         self.sound_api.play_sound_from_url(self.server_api.url_for_sound("love.wav"))
                         self.leds_api.load_from_url(self.server_api.url_for_icon("heartbeat.gif"))
-                        rospy.sleep(3.0)
+                        rospy.sleep(5.0)
                         self.onboard_api.set_image(self.server_api.url_for_image("normal.png"))
                         self.leds_api.load_from_url(self.server_api.url_for_icon("elmo_idm.png"))
             else:

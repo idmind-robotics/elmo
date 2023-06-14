@@ -3,7 +3,4 @@
 
     </rosparam>
     
-    <!-- ai tools   -->
-    <include file="$(find idmind_edenai)/launch/norway.launch" />
-
 </launch>
