@@ -3,7 +3,7 @@
 
 import os
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import String, Empty
 from std_srvs.srv import Trigger
 import requests
 
@@ -28,6 +28,7 @@ UNRECOGNIZED = "I'm sorry, I didn't understand that."
 class Node:
 
     def __init__(self):
+        self.heartbeat_pub = rospy.Publisher(rospy.get_name() + "/heartbeat", Empty, queue_size=10)
         self.enabled = rospy.get_param(rospy.get_name() + "/starts_enabled", True)
         self.language = rospy.get_param("language", "en")
         self.pub = rospy.Publisher(rospy.get_name() + "/output", String, queue_size=1)
@@ -54,6 +55,7 @@ class Node:
         rate = rospy.Rate(20)
         while not rospy.is_shutdown():
             rate.sleep()
+            self.heartbeat_pub.publish()
             if not self.enabled:
                 continue
             try:

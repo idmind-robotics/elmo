@@ -1,7 +1,7 @@
 <launch>
     <group ns="ai" >
-        <param name="token" value="$(env EDEN_AI_SANDBOX_KEY)" />
-        <!-- <param name="token" value="$(env EDEN_AI_PRODUCTION_KEY)" /> -->
+        <!-- <param name="token" value="$(env EDEN_AI_SANDBOX_KEY)" /> -->
+        <param name="token" value="$(env EDEN_AI_PRODUCTION_KEY)" />
         <rosparam subst_value="true" >
             language: pt
             conversation/starts_enabled: true
@@ -17,7 +17,7 @@
         <remap from="sentiment_analysis/input" to="conversation/output" />
         <remap from="emotion_extraction/input" to="conversation/output" />
 
-        <!-- <node pkg="idmind_edenai" output="screen" type="speech_to_text.py" name="speech_to_text" /> -->
+        <node pkg="idmind_edenai" output="screen" type="speech_to_text.py" name="speech_to_text" />
         <node pkg="idmind_edenai" output="screen" type="conversation.py" name="conversation" />
         <!-- <node pkg="idmind_edenai" output="screen" type="text_to_speech.py" name="text_to_speech" /> -->
         <node pkg="idmind_edenai" output="screen" type="offline_tts.py" name="text_to_speech" />

@@ -2,7 +2,7 @@
 
 
 import rospy
-from std_msgs.msg import String, Bool
+from std_msgs.msg import String, Bool, Empty
 from std_srvs.srv import Trigger
 import requests
 from playsound import playsound
@@ -12,6 +12,7 @@ import os
 class Node:
 
     def __init__(self):
+        self.heartbeat_pub = rospy.Publisher(rospy.get_name() + "/heartbeat", Empty, queue_size=10)
         self.token = rospy.get_param("token")
         self.enabled = rospy.get_param(rospy.get_name() + "/starts_enabled", True)
         self.pending_input = None
@@ -37,6 +38,7 @@ class Node:
         rate = rospy.Rate(20)
         while not rospy.is_shutdown():
             rate.sleep()
+            self.heartbeat_pub.publish()
             if not self.enabled:
                 continue
             if not self.pending_input:
