@@ -52,6 +52,8 @@ class Node:
         return True, "OK"
 
     def reset_context(self):
+        if self.context == self.initial_context:
+            return
         rospy.loginfo("resetting context")
         self.context = self.initial_context
 

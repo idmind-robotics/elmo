@@ -66,6 +66,25 @@ def onboard_request():
     return jsonify({})
 
 
+@app.route("/api/onboard/speech", methods=["POST"])
+def onboard_speech():
+    print(request.json)
+    r = request.json["result"]
+    speech_pub.publish(r)
+    return jsonify({})
+
+
+@app.route("/api/onboard/log", methods=["POST"])
+def onboard_log():
+    if "info" in request.json:
+        rospy.loginfo(request.json["info"])
+    if "warn" in request.json:
+        rospy.logwarn(request.json["warn"])
+    if "error" in request.json:
+        rospy.logerror(request.json["error"])
+    return jsonify({})
+
+
 @app.route("/icons", methods=["GET", "POST"])
 def icons():
     if request.method == "GET":
@@ -170,6 +189,8 @@ if __name__ == "__main__":
     rospy.Subscriber("/onboard/command", String, on_command)
     state_pub = rospy.Publisher("/onboard/state", String, queue_size=10)
     user_request_pub = rospy.Publisher("/onboard/user_request", String, queue_size=10)
+    # speech_pub = rospy.Publisher("/onboard/speech", String, queue_size=10)
+    speech_pub = rospy.Publisher("/ai/speech_to_text/output", String, queue_size=10)
     while not rospy.is_shutdown():
         rospy.sleep(0.1)
     print("server shutting down")

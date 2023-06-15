@@ -7,6 +7,8 @@ from std_msgs.msg import String, Bool
 from std_srvs.srv import Trigger
 import rosservice
 
+import logger
+
 
 STATE_LISTENING = 0
 STATE_PROCESSING = 1
@@ -16,6 +18,7 @@ STATE_SPEAKING = 2
 class Node:
 
     def __init__(self):
+        self.logger = logger.Logger()
         self.state = STATE_LISTENING
         rospy.Subscriber("speech_to_text/output", String, self.on_speech_to_text)
         self.conversation_input_pub = rospy.Publisher("conversation/input", String, queue_size=10)
@@ -57,29 +60,30 @@ class Node:
     def on_speech_to_text(self, msg):
         print("got speech")
         if self.state == STATE_LISTENING:
-            print("is listening")
+            self.logger.info("is listening")
             self.disable_speech_to_text()
             text = msg.data
             self.conversation_input_pub.publish(text)
             self.state = STATE_PROCESSING
-            print("is now processing")
+            self.logger.info("is now processing")
 
     def on_conversation_output(self, msg):
         print("got conversation")
         if self.state == STATE_PROCESSING or self.state == STATE_LISTENING:
-            print("is processing")
+            self.logger.info("is processing")
             text = msg.data
             self.text_to_speech_input_pub.publish(text)
             self.state = STATE_SPEAKING
-            print("is now speaking")
+            self.logger.info("is now speaking")
 
     def on_speaking(self, msg):
         speaking = msg.data
         if not speaking:
-            print("no more speech")
+            self.logger.info("no more speech")
+            rospy.sleep(2.0)
             self.enable_speech_to_text()
             self.state = STATE_LISTENING
-            print("is now listening")
+            self.logger.info("is now listening")
 
 
 if __name__ == '__main__':

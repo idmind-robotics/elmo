@@ -12,6 +12,8 @@ const menu_alarm = document.getElementById("menu-alarm");
 const COMMAND_URL = "http://elmo:8000/api/onboard/command";
 const STATE_URL = "http://elmo:8000/api/onboard/state";
 const USER_REQUEST_URL = "http://elmo:8000/api/onboard/user_request";
+const SPEECH_URL = "http://elmo:8000/api/onboard/speech";
+const LOG_URL = "http://elmo:8000/api/onboard/log";
 
 
 const ONBOARD_STATE = {
@@ -54,6 +56,9 @@ menu_alarm.onclick = () => {
 };
 
 
+
+
+/*
 img_eyes.onclick = () => {
     hide(img_eyes);
     show_flex(menu);
@@ -64,7 +69,7 @@ img_eyes.onclick = () => {
         SHOWING_MENU = false;
     }, 5000);
 };
-
+*/
 
 const reset_state = () => {
     ONBOARD_STATE.image = null;
@@ -193,3 +198,97 @@ async function loop() {
 
 
 setInterval(loop, 100);
+
+const loginfo = (msg) => {
+    fetch(LOG_URL, { 
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+            info: msg
+        })
+    });
+};
+
+const logwarn = (msg) => {
+    fetch(LOG_URL, { 
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+            warn: msg
+        })
+    });
+};
+
+const logerror = (msg) => {
+    fetch(LOG_URL, { 
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+            error: msg
+        })
+    });
+};
+
+
+
+/* SPEECH RECOGNITION */
+// Check browser support for the SpeechRecognition API
+if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+    // Create a new instance of the SpeechRecognition object
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  
+    // Set the language to Portuguese (Portugal)
+    recognition.lang = 'pt-PT';
+  
+    // Event fired when speech recognition starts
+    recognition.onstart = () => {
+        loginfo('Speech recognition started');
+    };
+  
+    // Event fired when speech recognition results are available
+    recognition.onresult = (event) => {
+        loginfo(JSON.stringify(event))
+        const transcript = event.results[0][0].transcript;
+        loginfo('Recognized speech:', transcript);
+        // update state
+        fetch(SPEECH_URL, { 
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            headers: {
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({
+                result: transcript
+            })
+        });
+    };
+  
+    // Event fired when speech recognition ends
+    recognition.onend = () => {
+        loginfo('Speech recognition ended');
+        recognition.start();
+    };
+  
+    // Event fired when an error occurs during speech recognition
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+    };
+
+  recognition.start();
+
+} else {
+    console.error('Speech recognition not supported in this browser');
+}
