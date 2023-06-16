@@ -8,6 +8,8 @@ from flask_cors import CORS
 import threading
 import rospy
 from std_msgs.msg import String
+import logger
+
 from werkzeug.utils import secure_filename
 
 
@@ -77,11 +79,14 @@ def onboard_speech():
 @app.route("/api/onboard/log", methods=["POST"])
 def onboard_log():
     if "info" in request.json:
-        rospy.loginfo(request.json["info"])
+        log = "Onboard " + request.json["info"]
+        logger.info(log)
     if "warn" in request.json:
-        rospy.logwarn(request.json["warn"])
+        log = "Onboard " + request.json["warn"]
+        logger.warn(log)
     if "error" in request.json:
-        rospy.logerror(request.json["error"])
+        log = "Onboard " + request.json["error"]
+        logger.error(log)
     return jsonify({})
 
 
@@ -176,6 +181,7 @@ def delete_video(name):
 
 if __name__ == "__main__":
     rospy.init_node("http_server")
+    logger = logger.Logger()
     server_port = rospy.get_param("http_server/port")
     server_thread = threading.Thread(target=lambda: app.run(debug=False, port=server_port, host="0.0.0.0"))
     server_thread.setDaemon(True)

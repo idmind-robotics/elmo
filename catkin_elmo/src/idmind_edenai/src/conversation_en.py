@@ -5,19 +5,11 @@ import rospy
 from std_msgs.msg import String, Empty
 from std_srvs.srv import Trigger
 import requests
-import logger
 
 
-INITIAL_CONTEXT_EN = """
+INITIAL_CONTEXT = """
 
 Human: Pretend that you are a robot named Elmo. Include in your replies only text.
-
-Robot: OK"""
-
-
-INITIAL_CONTEXT_PT = """
-
-Human: Pretend that you are a robot named Elmo. Include in your replies only text. Reply in portuguese from Portugal.
 
 Robot: OK"""
 
@@ -28,15 +20,12 @@ CONTEXT_RESET_TIMEOUT = 60 * 5
 class Node:
 
     def __init__(self):
-        self.logger = logger.Logger()
         self.heartbeat_pub = rospy.Publisher(rospy.get_name() + "/heartbeat", Empty, queue_size=10)
         self.token = rospy.get_param("token")
-        self.language = rospy.get_param("language", "en")
-        self.initial_context = INITIAL_CONTEXT_EN if self.language == "en" else INITIAL_CONTEXT_PT
         self.enabled = rospy.get_param(rospy.get_name() + "/starts_enabled", True)
         self.max_tokens = rospy.get_param(rospy.get_name() + "/max_tokens", 100)
         self.temperature = rospy.get_param(rospy.get_name() + "/temperature", 0.1)
-        self.context = self.initial_context
+        self.context = INITIAL_CONTEXT
         self.pending_input = None
         self.last_input_time = rospy.Time.now()
         rospy.Subscriber(rospy.get_name() + "/input", String, self.on_input)
@@ -54,20 +43,19 @@ class Node:
         return True, "OK"
 
     def reset_context(self):
-        if self.context == self.initial_context:
-            return
-        self.logger.info("resetting context")
-        self.context = self.initial_context
+        if self.context != INITIAL_CONTEXT:
+            rospy.loginfo("resetting context")
+            self.context = INITIAL_CONTEXT
 
     def on_enable(self, _):
         self.enabled = True
-        self.context = self.initial_context
+        self.reset_context()
         self.pending_input = ""
         return True, "OK"
 
     def on_disable(self, _):
         self.enabled = False
-        self.context = self.initial_context
+        self.reset_context()
         self.pending_input = ""
         return True, "OK"
 

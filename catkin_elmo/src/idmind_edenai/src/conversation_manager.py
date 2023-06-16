@@ -20,9 +20,9 @@ class Node:
     def __init__(self):
         self.logger = logger.Logger()
         self.state = STATE_LISTENING
-        rospy.Subscriber("speech_to_text/output", String, self.on_speech_to_text)
+        rospy.Subscriber("speech_to_text/output/en", String, self.on_speech_to_text)
         self.conversation_input_pub = rospy.Publisher("conversation/input", String, queue_size=10)
-        rospy.Subscriber("conversation/output", String, self.on_conversation_output)
+        rospy.Subscriber("conversation/output/pt", String, self.on_conversation_output)
         self.text_to_speech_input_pub = rospy.Publisher(
             "text_to_speech/input",
             String,

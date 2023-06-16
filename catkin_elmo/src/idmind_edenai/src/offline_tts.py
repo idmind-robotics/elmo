@@ -24,7 +24,7 @@ class Node:
     def __init__(self):
         self.heartbeat_pub = rospy.Publisher(rospy.get_name() + "/heartbeat", Empty, queue_size=10)
         self.enabled = rospy.get_param(rospy.get_name() + "/starts_enabled", True)
-        self.language = rospy.get_param("language", "en")
+        self.language = rospy.get_param("~language")
         self.pending_input = None
         rospy.Subscriber(rospy.get_name() + "/input", String, self.on_input)
         self.speaking_pub = rospy.Publisher(rospy.get_name() + "/speaking", Bool, queue_size=1)
@@ -32,7 +32,11 @@ class Node:
         rospy.Service(rospy.get_name() + "/disable", Trigger, self.on_disable)
 
     def on_input(self, msg):
-        self.pending_input = msg.data
+        data = msg.data
+        forbidden = ["<", ">", "&", ";", "$", "|", "`", "(", ")", "{", "}", "[", "]", "\\", "!", "#", "%", "^", "*", "+", "=", "~", "?", ":", "'", "\"", ",", ".", "/", "@", "_"]
+        for char in forbidden:
+            data = data.replace(char, "")
+        self.pending_input = data
 
     def on_enable(self, _):
         self.enabled = True

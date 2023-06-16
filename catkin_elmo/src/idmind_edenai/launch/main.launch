@@ -3,23 +3,32 @@
         <!-- <param name="token" value="$(env EDEN_AI_SANDBOX_KEY)" /> -->
         <param name="token" value="$(env EDEN_AI_PRODUCTION_KEY)" />
         <rosparam subst_value="true" >
-            language: pt
             conversation/starts_enabled: true
             conversation/max_tokens: 100
             conversation/temperature: 0.1
             text_to_speech/starts_enabled: true
             text_to_speech/unrecognized: $(find idmind_edenai)/res/unrecognized_pt.wav
+            text_to_speech/language: pt
             speech_to_text/starts_enabled: true
             sentiment_analysis/starts_enabled: true
             emotion_extraction/starts_enabled: true
         </rosparam>
 
-        <remap from="sentiment_analysis/input" to="conversation/output" />
-        <remap from="emotion_extraction/input" to="conversation/output" />
+        <node pkg="idmind_edenai" type="translate_node.py" name="pt_to_en" >
+            <param name="from_lang" value="pt" />
+            <param name="to_lang" value="en" />
+            <remap from="input" to="/ai/speech_to_text/output" />
+            <remap from="output" to="/ai/speech_to_text/output/en" />
+        </node>
 
-        <!-- <node pkg="idmind_edenai" output="screen" type="speech_to_text.py" name="speech_to_text" /> -->
-        <node pkg="idmind_edenai" output="screen" type="conversation.py" name="conversation" />
-        <!-- <node pkg="idmind_edenai" output="screen" type="text_to_speech.py" name="text_to_speech" /> -->
+        <node pkg="idmind_edenai" type="translate_node.py" name="en_to_pt" >
+            <param name="from_lang" value="en" />
+            <param name="to_lang" value="pt" />
+            <remap from="input" to="/ai/conversation/output" />
+            <remap from="output" to="/ai/conversation/output/pt" />
+        </node>
+
+        <node pkg="idmind_edenai" output="screen" type="conversation_en.py" name="conversation" />
         <node pkg="idmind_edenai" output="screen" type="offline_tts.py" name="text_to_speech" />
         <!-- <node pkg="idmind_edenai" output="screen" type="sentiment_analysis.py" name="sentiment_analysis" /> -->
         <!-- <node pkg="idmind_edenai" output="screen" type="emotion_extraction.py" name="emotion_extraction" /> -->
