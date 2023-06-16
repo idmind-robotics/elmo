@@ -196,7 +196,7 @@ if __name__ == "__main__":
     state_pub = rospy.Publisher("/onboard/state", String, queue_size=10)
     user_request_pub = rospy.Publisher("/onboard/user_request", String, queue_size=10)
     # speech_pub = rospy.Publisher("/onboard/speech", String, queue_size=10)
-    speech_pub = rospy.Publisher("/ai/speech_to_text/output", String, queue_size=10)
+    speech_pub = rospy.Publisher("/speech_to_text/output", String, queue_size=10)
     while not rospy.is_shutdown():
         rospy.sleep(0.1)
     print("server shutting down")

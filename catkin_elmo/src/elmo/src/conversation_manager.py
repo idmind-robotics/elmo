@@ -8,6 +8,7 @@ from std_srvs.srv import Trigger
 import rosservice
 
 import logger
+import robot
 
 
 STATE_LISTENING = 0
@@ -19,6 +20,10 @@ class Node:
 
     def __init__(self):
         self.logger = logger.Logger()
+        self.onboard = robot.Onboard()
+        server = robot.Server()
+        self.normal_url = server.url_for_image("normal.png")
+        self.thinking_url = server.url_for_image("thinking2.png")
         self.state = STATE_LISTENING
         rospy.Subscriber("speech_to_text/output/en", String, self.on_speech_to_text)
         self.conversation_input_pub = rospy.Publisher("conversation/input", String, queue_size=10)
@@ -66,6 +71,7 @@ class Node:
             self.conversation_input_pub.publish(text)
             self.state = STATE_PROCESSING
             self.logger.info("is now processing")
+            self.onboard.set_image(self.thinking_url)
 
     def on_conversation_output(self, msg):
         print("got conversation")
@@ -75,6 +81,7 @@ class Node:
             self.text_to_speech_input_pub.publish(text)
             self.state = STATE_SPEAKING
             self.logger.info("is now speaking")
+            self.onboard.set_image(self.normal_url)
 
     def on_speaking(self, msg):
         speaking = msg.data
