@@ -32,6 +32,12 @@ turnOff()
   setPinState $SHUTDOWN $OFF
 }
 
+
 exportPin $SHUTDOWN
 setOutput $SHUTDOWN
-turnOff
+
+while :
+do
+  turnOff
+  sleep 5
+done

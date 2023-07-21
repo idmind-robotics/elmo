@@ -5,6 +5,7 @@
         conversation/starts_enabled: true
         conversation/max_tokens: 100
         conversation/temperature: 0.1
+        conversation/language: pt
         text_to_speech/starts_enabled: true
         text_to_speech/unrecognized: $(find idmind_edenai)/res/unrecognized_pt.wav
         text_to_speech/language: pt
@@ -13,6 +14,7 @@
         emotion_extraction/starts_enabled: true
     </rosparam>
 
+    <!--
     <node pkg="elmo" type="translate_node.py" name="pt_to_en" >
         <param name="from_lang" value="pt" />
         <param name="to_lang" value="en" />
@@ -26,10 +28,12 @@
         <remap from="input" to="conversation/output" />
         <remap from="output" to="conversation/output/pt" />
     </node>
-
-    <node pkg="elmo" output="screen" type="conversation_en.py" name="conversation" />
+    -->
+    <!-- node pkg="elmo" output="screen" type="conversation_en.py" name="conversation" /-->
+    <node pkg="elmo" output="screen" type="conversation.py" name="conversation" />
     <node pkg="elmo" output="screen" type="offline_tts.py" name="text_to_speech" />
     <!-- <node pkg="idmind_edenai" output="screen" type="sentiment_analysis.py" name="sentiment_analysis" /> -->
     <!-- <node pkg="idmind_edenai" output="screen" type="emotion_extraction.py" name="emotion_extraction" /> -->
     <node pkg="elmo" output="screen" type="conversation_manager.py" name="conversation_manager" />
+    <node pkg="elmo" output="screen" type="conversation_logger.py" name="conversation_logger" />
 </launch>

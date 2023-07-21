@@ -2,5 +2,6 @@
     <rosparam subst_value="true">
 
     </rosparam>
+    <include file="$(find elmo)/launch/ai.launch" />
     
 </launch>

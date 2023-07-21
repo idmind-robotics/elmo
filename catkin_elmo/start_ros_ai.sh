@@ -7,5 +7,5 @@ source /home/idmind/edenai.sh
 export ROS_MASTER_URI=http://localhost:11311
 export ROS_HOSTNAME=elmo
 export DISPLAY=0:0
-roslaunch --wait idmind_edenai main.launch
+roslaunch elmo ai.launch --wait
 

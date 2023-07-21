@@ -26,25 +26,21 @@
         gpio:
             shutdown_pin: 17
     </rosparam>
-    <node pkg="elmo" type="config.py"           name="config" />
-    <node pkg="elmo" type="pan_tilt.py"         name="pan_tilt" />
-    <node pkg="elmo" type="gpio.py"             name="gpio" />
-    <node pkg="elmo" type="leds.py"             name="leds" />
-    <node pkg="elmo" type="touch_sensors.py"    name="touch_sensors" />
-    <node pkg="elmo" type="touch_calibrator.py" name="touch_calibrator" />
-    <node pkg="elmo" type="http_server.py"      name="http_server" />
-    <node pkg="elmo" type="robot_server.py"     name="robot_server" />
-    <!-- <node pkg="elmo" type="wifi.py"             name="wifi" output="screen" /> -->
-    <node pkg="elmo" type="speakers.py"         name="speakers" output="screen" />
-    <node pkg="elmo" type="blush.py"            name="blush" />
-    <node pkg="elmo" type="startup.py"          name="startup" />
+    <node pkg="elmo" type="config.py"               name="config" />
+    <node pkg="elmo" type="pan_tilt.py"             name="pan_tilt" />
+    <node pkg="elmo" type="pan_tilt_watchdog.py"    name="pan_tilt_watchdog" />
+    <node pkg="elmo" type="gpio.py"                 name="gpio" />
+    <node pkg="elmo" type="leds.py"                 name="leds" />
+    <node pkg="elmo" type="touch_sensors.py"        name="touch_sensors" />
+    <node pkg="elmo" type="touch_calibrator.py"     name="touch_calibrator" />
+    <node pkg="elmo" type="http_server.py"          name="http_server" />
+    <node pkg="elmo" type="robot_server.py"         name="robot_server" />
+    <!--node pkg="elmo" type="wifi.py"                 name="wifi" output="screen" /-->
+    <node pkg="elmo" type="speakers.py"             name="speakers" output="screen" />
+    <node pkg="elmo" type="blush.py"                name="blush" />
+    <node pkg="elmo" type="startup.py"              name="startup" />
     <!-- test nodes -->
-    <node pkg="elmo" type="test_motors.py"      name="test_pan_tilt" />
-    <node pkg="elmo" type="test_leds.py"        name="test_leds" />
-    <!-- startup routine -->
-    <!--node pkg="elmo" output="screen" type="start_routine.py"    name="start_routine" /-->
-    <!--node pkg="elmo" output="screen" type="start_demo.py"    name="start_demo" /-->
-    
-    <!-- behaviours -->
-    <node pkg="elmo" type="call_friend.py"    name="call_friend" />
+    <node pkg="elmo" type="test_motors.py"          name="test_pan_tilt" />
+    <node pkg="elmo" type="test_leds.py"            name="test_leds" />
+
 </launch>

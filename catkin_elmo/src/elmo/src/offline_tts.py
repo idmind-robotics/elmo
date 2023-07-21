@@ -62,7 +62,6 @@ class Node:
                 self.language,
                 self.pending_input
             )
-            print(command)
             os.system(command)
             self.speaking_pub.publish(False)
             self.pending_input = None

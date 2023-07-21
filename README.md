@@ -205,3 +205,6 @@ After shutting down, the raspberry needs to use a GPIO pin to disable the power 
 This is achieved by copying the idm_poweroff.service file to /etc/systemd/system/ and enabling the service:
 
   $ sudo systemctl enable idm_poweroff.service
+
+Alternatively, place the idm_poweroff.sh script inside /lib/systemd/system-shutdown/
+

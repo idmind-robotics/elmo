@@ -344,6 +344,7 @@ class Touch:
 
 class PanTilt:
     def __init__(self):
+        self.last_command = PanTiltMsg()
         self.status = PanTiltMsg()
         def on_status(msg):
             self.status = msg

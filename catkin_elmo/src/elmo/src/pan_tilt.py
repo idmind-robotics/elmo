@@ -14,6 +14,7 @@ from std_srvs.srv import Trigger
 
 LOOP_RATE = 10
 DEBUG = False
+MAX_ERRORS_BEFORE_RESET = 5
 
 
 class Node:
@@ -21,6 +22,7 @@ class Node:
         while not rospy.is_shutdown() and not rospy.get_param("robot_setup"):
             rospy.sleep(0.1)
         self.connect()
+        self.n_errors = 0
         self.status_pan_torque = False
         self.status_pan_angle = self.pan.get_servo_angle()
         self.status_pan_angle_ref = self.status_pan_angle
@@ -156,8 +158,8 @@ class Node:
                 self.status_pan_angle = self.pan.get_servo_angle()
                 self.status_tilt_angle = self.tilt.get_servo_angle()
                 # update temperature status
-                self.status_pan_temperature = self.pan.get_servo_temperature()
-                self.status_tilt_temperature = self.tilt.get_servo_temperature()
+                # self.status_pan_temperature = self.pan.get_servo_temperature()
+                # self.status_tilt_temperature = self.tilt.get_servo_temperature()
                 # publish status
                 status = PanTilt()
                 status.pan_torque = self.status_pan_torque
@@ -198,29 +200,34 @@ class Node:
                     # self.tilt.set_servo_angle(self.command_tilt_angle, 100, 0)
                     self.status_tilt_angle_ref = self.command_tilt_angle
                     # continue
+                self.n_errors = 0
             except Exception as e:
                 try:
-                    self.status_pan_torque = False
-                    self.status_pan_angle = self.pan.get_servo_angle()
-                    self.status_pan_angle_ref = self.status_pan_angle
-                    self.status_pan_temperature = self.pan.get_servo_temperature()
-                    self.status_tilt_torque = False
-                    self.status_tilt_angle = self.tilt.get_servo_angle()
-                    self.status_tilt_angle_ref = self.status_tilt_angle
-                    self.status_tilt_temperature = self.tilt.get_servo_temperature()
-                    self.command_pan_torque = False
-                    self.command_pan_angle = self.status_pan_angle
-                    self.command_tilt_torque = False
-                    self.command_tilt_angle = self.status_tilt_angle
-                    self.command_playtime = 0
-                    rospy.logerr(rospy.get_name() + ": " + str(e))
-                    rospy.logerr("attempting to recover")
-                    rospy.sleep(1.0)
-                    rospy.loginfo("closing connection")
-                    hx.close()
-                    rospy.sleep(1.0)
-                    rospy.loginfo("opening connection")
-                    self.connect()
+                    self.n_errors += 1
+                    self.hx.clear_errors()
+                    if self.n_errors > MAX_ERRORS_BEFORE_RESET:
+                        self.n_errors = 0
+                        self.status_pan_torque = False
+                        self.status_pan_angle = self.pan.get_servo_angle()
+                        self.status_pan_angle_ref = self.status_pan_angle
+                        self.status_pan_temperature = self.pan.get_servo_temperature()
+                        self.status_tilt_torque = False
+                        self.status_tilt_angle = self.tilt.get_servo_angle()
+                        self.status_tilt_angle_ref = self.status_tilt_angle
+                        self.status_tilt_temperature = self.tilt.get_servo_temperature()
+                        self.command_pan_torque = False
+                        self.command_pan_angle = self.status_pan_angle
+                        self.command_tilt_torque = False
+                        self.command_tilt_angle = self.status_tilt_angle
+                        self.command_playtime = 0
+                        rospy.logerr(rospy.get_name() + ": " + str(e))
+                        rospy.logerr("attempting to recover")
+                        rospy.sleep(1.0)
+                        rospy.loginfo("closing connection")
+                        hx.close()
+                        rospy.sleep(1.0)
+                        rospy.loginfo("opening connection")
+                        self.connect()
                 except:
                     pass
 

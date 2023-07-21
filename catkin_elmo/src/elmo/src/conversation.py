@@ -22,7 +22,7 @@ Human: Pretend that you are a robot named Elmo. Include in your replies only tex
 Robot: OK"""
 
 
-CONTEXT_RESET_TIMEOUT = 60 * 5
+CONTEXT_RESET_TIMEOUT = 60 * 3
 
 
 class Node:
@@ -31,7 +31,8 @@ class Node:
         self.logger = logger.Logger()
         self.heartbeat_pub = rospy.Publisher(rospy.get_name() + "/heartbeat", Empty, queue_size=10)
         self.token = rospy.get_param("token")
-        self.language = rospy.get_param("language", "en")
+        self.language = rospy.get_param("~language", "en")
+        rospy.loginfo("language: %s", self.language)
         self.initial_context = INITIAL_CONTEXT_EN if self.language == "en" else INITIAL_CONTEXT_PT
         self.enabled = rospy.get_param(rospy.get_name() + "/starts_enabled", True)
         self.max_tokens = rospy.get_param(rospy.get_name() + "/max_tokens", 100)
@@ -44,6 +45,7 @@ class Node:
         rospy.Service(rospy.get_name() + "/reset_context", Trigger, self.on_reset_context)
         rospy.Service(rospy.get_name() + "/enable", Trigger, self.on_enable)
         rospy.Service(rospy.get_name() + "disable", Trigger, self.on_disable)
+        self.reset_pub = rospy.Publisher(rospy.get_name() + "/reset", Empty, queue_size=10)
 
     def on_input(self, msg):
         self.last_input_time = rospy.Time.now()
@@ -58,6 +60,7 @@ class Node:
             return
         self.logger.info("resetting context")
         self.context = self.initial_context
+        self.reset_pub.publish()
 
     def on_enable(self, _):
         self.enabled = True
@@ -83,7 +86,6 @@ class Node:
             if not self.pending_input:
                 continue
             data = self.context + "\n\nHuman: " + self.pending_input
-            self.context += "\n\nHuman: " + self.pending_input
             url = "https://api.edenai.run/v2/text/generation"
             payload = {
                 "providers": "openai",
@@ -97,19 +99,24 @@ class Node:
                 "Content-Type": "application/json",
                 "Authorization": "Bearer %s" % self.token
             }
-            print("---")
-            print(self.context)
-            response = requests.post(url, json=payload, headers=headers)
-            data = response.json()
-            print(data)
-            generated_text = data["openai"]["generated_text"].encode("utf-8")
-            reply = "".join(generated_text.split(":")[1:])
-            print("generated text: " + generated_text)
-            print(reply)
-            self.context += generated_text
-            self.pub.publish(reply)
-            self.pending_input = None
-            print(self.context)
+            try:
+                response = requests.post(url, json=payload, headers=headers)
+                self.context += "\n\nHuman: " + self.pending_input
+                print("---")
+                print(self.context)
+                data = response.json()
+                print(data)
+                generated_text = data["openai"]["generated_text"].encode("utf-8")
+                reply = "".join(generated_text.split(":")[1:])
+                print("generated text: " + generated_text)
+                print(reply)
+                self.context += generated_text
+                self.pub.publish(reply)
+                self.pending_input = None
+                print(self.context)
+            except Exception as e:
+                self.logger.error(str(e))
+                rospy.sleep(1.0)
 
 
 if __name__ == '__main__':
