@@ -8,6 +8,8 @@ from flask_cors import CORS
 import threading
 import rospy
 from std_msgs.msg import String
+import logger
+
 from werkzeug.utils import secure_filename
 
 
@@ -24,8 +26,8 @@ CORS(app)
 
 ONBOARD_COMMAND = {
     "text": "",
-    "image": "",
-    "video": "http://elmo:8000/videos/eyes_green_normal.mp4",
+    "image": "http://elmo:8000/images/normal.png",
+    "video": "",
     "url": "",
 
 }
@@ -44,10 +46,7 @@ def index():
 @app.route("/api/onboard/command")
 def onboard_command():
     res = jsonify(ONBOARD_COMMAND)
-    ONBOARD_COMMAND["text"] = ""
-    ONBOARD_COMMAND["image"] = ""
     ONBOARD_COMMAND["video"] = ""
-    ONBOARD_COMMAND["url"] = ""
     return res
 
 
@@ -58,6 +57,36 @@ def onboard_state():
         ONBOARD_STATE[k] = state[k]
     onboard_state_description = json.dumps(ONBOARD_STATE)
     state_pub.publish(onboard_state_description)
+    return jsonify({})
+
+
+@app.route("/api/onboard/user_request", methods=["POST"])
+def onboard_request():
+    print(request.json)
+    r = request.json["request"]
+    user_request_pub.publish(r)
+    return jsonify({})
+
+
+@app.route("/api/onboard/speech", methods=["POST"])
+def onboard_speech():
+    print(request.json)
+    r = request.json["result"]
+    speech_pub.publish(r)
+    return jsonify({})
+
+
+@app.route("/api/onboard/log", methods=["POST"])
+def onboard_log():
+    if "info" in request.json:
+        log = "Onboard " + request.json["info"]
+        logger.info(log)
+    if "warn" in request.json:
+        log = "Onboard " + request.json["warn"]
+        logger.warn(log)
+    if "error" in request.json:
+        log = "Onboard " + request.json["error"]
+        logger.error(log)
     return jsonify({})
 
 
@@ -152,6 +181,7 @@ def delete_video(name):
 
 if __name__ == "__main__":
     rospy.init_node("http_server")
+    logger = logger.Logger()
     server_port = rospy.get_param("http_server/port")
     server_thread = threading.Thread(target=lambda: app.run(debug=False, port=server_port, host="0.0.0.0"))
     server_thread.setDaemon(True)
@@ -164,6 +194,9 @@ if __name__ == "__main__":
             ONBOARD_COMMAND[k] = command[k]
     rospy.Subscriber("/onboard/command", String, on_command)
     state_pub = rospy.Publisher("/onboard/state", String, queue_size=10)
+    user_request_pub = rospy.Publisher("/onboard/user_request", String, queue_size=10)
+    # speech_pub = rospy.Publisher("/onboard/speech", String, queue_size=10)
+    speech_pub = rospy.Publisher("/speech_to_text/output", String, queue_size=10)
     while not rospy.is_shutdown():
         rospy.sleep(0.1)
     print("server shutting down")

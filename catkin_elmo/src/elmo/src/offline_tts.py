@@ -2,7 +2,7 @@
 
 
 import rospy
-from std_msgs.msg import String, Bool
+from std_msgs.msg import String, Bool, Empty
 from std_srvs.srv import Trigger
 import requests
 import os
@@ -22,8 +22,9 @@ $ sudo apt install mpg123
 class Node:
 
     def __init__(self):
+        self.heartbeat_pub = rospy.Publisher(rospy.get_name() + "/heartbeat", Empty, queue_size=10)
         self.enabled = rospy.get_param(rospy.get_name() + "/starts_enabled", True)
-        self.language = rospy.get_param("language", "en")
+        self.language = rospy.get_param("~language")
         self.pending_input = None
         rospy.Subscriber(rospy.get_name() + "/input", String, self.on_input)
         self.speaking_pub = rospy.Publisher(rospy.get_name() + "/speaking", Bool, queue_size=1)
@@ -31,7 +32,11 @@ class Node:
         rospy.Service(rospy.get_name() + "/disable", Trigger, self.on_disable)
 
     def on_input(self, msg):
-        self.pending_input = msg.data
+        data = msg.data
+        forbidden = ["<", ">", "&", ";", "$", "|", "`", "(", ")", "{", "}", "[", "]", "\\", "!", "#", "%", "^", "*", "+", "=", "~", "?", ":", "'", "\"", ",", ".", "/", "@", "_"]
+        for char in forbidden:
+            data = data.replace(char, "")
+        self.pending_input = data
 
     def on_enable(self, _):
         self.enabled = True
@@ -47,20 +52,16 @@ class Node:
         rate = rospy.Rate(20)
         while not rospy.is_shutdown():
             rate.sleep()
+            self.heartbeat_pub.publish()
             if not self.enabled:
                 continue
             if not self.pending_input:
                 continue
             self.speaking_pub.publish(True)
-            # command = "gtts-cli -l %s \"%s\" --output /tmp/f.mp3 && mpg123 /tmp/f.mp3 && rm /tmp/f.mp3" % (
-            #     "en",
-            #     self.pending_input
-            # )
-            command = "gtts-cli -l %s \"%s\" --output /tmp/f.mp3 && ffmpeg -i /tmp/f.mp3 /tmp/f.wav && aplay /tmp/f.wav && rm /tmp/f.mp3 /tmp/f.wav" % (
+            command = "/usr/bin/rm -f /tmp/f.mp3 /tmp/f.wav && /home/idmind/.local/bin/gtts-cli -l %s \"%s\" --output /tmp/f.mp3 && /usr/bin/ffmpeg -i /tmp/f.mp3 /tmp/f.wav && aplay /tmp/f.wav && /usr/bin/rm -f /tmp/f.mp3 /tmp/f.wav" % (
                 self.language,
                 self.pending_input
             )
-            print(command)
             os.system(command)
             self.speaking_pub.publish(False)
             self.pending_input = None

@@ -37,7 +37,8 @@ from elmo.srv import StringTrigger
 
 PLOT_POINTS = False
 SEND_MOTOR_COMMANDS = True
-SMOOTH_WINDOW_LENGTH = 6
+SMOOTH_POINTS = False
+SMOOTH_WINDOW_LENGTH = 5
 RATE_CALIBRATION_TIME = 3.0
 
 
@@ -95,8 +96,9 @@ class Node:
             pan_angles = [int(x[0]) for x in self.animation]
             tilt_angles = [int(x[1]) for x in self.animation]
             pan_angles, tilt_angles = self.trim_angles(pan_angles, tilt_angles)
-            pan_angles = self.smooth_points(pan_angles)
-            tilt_angles = self.smooth_points(tilt_angles)
+            if SMOOTH_POINTS:
+                pan_angles = self.smooth_points(pan_angles)
+                tilt_angles = self.smooth_points(tilt_angles)
             self.animation = zip(pan_angles, tilt_angles)
             if PLOT_POINTS:
                 self.plot_animation()

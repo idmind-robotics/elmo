@@ -30,7 +30,9 @@ class Node:
                 if pressed_counter < RATE:
                     pressed_counter += 1
                 else:
+                    rospy.loginfo("gpio: shutdown")
                     os.system("sudo shutdown -h now")
+                    break
             else:
                 pressed_counter = 0
 

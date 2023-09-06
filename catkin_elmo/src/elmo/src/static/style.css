@@ -44,30 +44,44 @@ body {
 }
 
 #video-bg {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0;
-    padding: 0;
-    object-fit: cover;
-    z-index: -1;
-    margin-left: auto;
-    margin-right: auto;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #video {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0;
-    padding: 0;
-    object-fit: cover;
-    z-index: -1;
-    margin-left: auto;
-    margin-right: auto;
+    /* center video */
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+#menu {
+    display: flex;
+
+}
+
+#menu >div {
+    padding: 1rem;
+    background-color: white;
+    border-radius: 4px;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+
+#menu img {
+    height: 40vh;
+    border-radius: 4px;
+}
+
+#menu img:active {
+    opacity: 0.5;
+
 }
 

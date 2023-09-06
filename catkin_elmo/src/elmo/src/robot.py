@@ -31,6 +31,8 @@ class Leds:
             response = requests.get(url)
             img = BytesIO(response.content)
             image = Image.open(img)
+            # create image buffer
+            messages = []
             try:
                 while 1:
                     image.seek(image.tell() + 1)
@@ -40,11 +42,14 @@ class Leds:
                             im = image.convert("RGB")
                             color = im.getpixel((12 - col, row))
                             msg.colors.append(ColorRGBA(r=color[0], g=color[1], b=color[2], a=0))
-                    self.pub.publish(msg)
-                    rospy.sleep(image.info["duration"] / 1000.0)
+                    messages.append(msg)
             except EOFError:
                 msg = Colors()
-                self.pub.publish(msg)
+                messages.append(msg)
+            # schedule the publishing of the messages
+            time_between_frames = image.info["duration"] / 1000.0
+            for i in range(len(messages)):
+                threading.Timer(time_between_frames * i, self.pub.publish, args=[messages[i]]).start()
         else:
             msg = Colors()
             response = requests.get(url)
@@ -144,14 +149,24 @@ class Server:
 class Onboard:
 
     def __init__(self):
+        self.user_request_callbacks = {}
         self.state = {
 
         }
         self.command_pub = rospy.Publisher("onboard/command", String, queue_size=10)
         rospy.Subscriber("onboard/state", String, self.__on_state)
+        rospy.Subscriber("onboard/user_request", String, self.on_user_request)
     
     def __on_state(self, msg):
         self.state = json.loads(msg.data)
+
+    def user_request_cb(self, request, callback):
+        self.user_request_callbacks[request] = callback
+
+    def on_user_request(self, msg):
+        request = msg.data
+        if request in self.user_request_callbacks:
+            self.user_request_callbacks[request]()
 
     def get_state(self):
         return self.state
@@ -212,6 +227,19 @@ class Onboard:
 
     def get_default_image(self):
         return rospy.get_param("onboard/default_image")
+
+    def is_playing_video(self):
+        return self.state["video"] is not None and self.state["video"] != ""
+
+    def reset(self):
+        command = {
+            "image": None,
+            "text": None,
+            "video": None,
+            "url": None
+        }
+        command_description = json.dumps(command)
+        self.command_pub.publish(command_description)
 
 
 class Touch:
@@ -316,6 +344,7 @@ class Touch:
 
 class PanTilt:
     def __init__(self):
+        self.last_command = PanTiltMsg()
         self.status = PanTiltMsg()
         def on_status(msg):
             self.status = msg
