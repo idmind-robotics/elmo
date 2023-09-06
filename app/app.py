@@ -181,8 +181,7 @@ class Window(QMainWindow, Ui_MainWindow):
         def update_icon():
             name = self.leds_icon_list.currentText()
             self.client.send_command("update_leds_icon", name=name)
-        self.leds_icon_update.clicked.connect(update_icon)
-        
+        self.leds_icon_update.clicked.connect(update_icon)        
         # color picker
         self.leds_preview.setAutoFillBackground(True)
         def update_preview():
@@ -290,10 +289,12 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def initialize_screen(self):
         self.image_list = []
+        self.video_list = []
         def clear_screen():
             self.client.send_command(
                 "set_screen",
                 image="",
+                video="",
                 text="",
                 url="",
                 camera=False
@@ -303,6 +304,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.client.send_command(
                     "set_screen",
                     image="" if self.screen_image_list.currentText() == "<None>" else self.screen_image_list.currentText(),
+                    video="" if self.screen_video_list.currentText() == "<None>" else self.screen_video_list.currentText(),
                     text=self.screen_text.text(),
                     url=self.screen_url.text(),
                     camera=self.screen_camera.isChecked(),
@@ -377,7 +379,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def update(self):
         if self.client is not None:            
-            print(self.client.__dict__)
+            # print(self.client.__dict__)
             self.client.update_status()
             try:
                 self.motors_pan.setRange(self.client.pan_min, self.client.pan_max)
@@ -404,8 +406,13 @@ class Window(QMainWindow, Ui_MainWindow):
                     self.multimedia_icon_list.addItems(self.client.icon_list)
                     self.icon_list = self.client.icon_list
                 if self.client.video_list != self.video_list:
+                    print(self.client.video_list)
+                    print(self.video_list)
+                    self.screen_video_list.clear()
+                    self.screen_video_list.addItems(["<None>"] + self.client.video_list)
                     self.multimedia_video_list.clear()
                     self.multimedia_video_list.addItems(self.client.video_list)
+                    self.multimedia_video_list = self.client.video_list
                     self.video_list = self.client.video_list
                 if self.client.sound_list != self.sound_list:
                     self.audio_sound_list.clear()
